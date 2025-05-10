@@ -1,0 +1,15 @@
+.item-detail {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  .quantity-controls {
+    margin: 15px 0;
+  }
+  .add-to-cart-btn {
+    background-color: #0071e3;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+  }

@@ -1,0 +1,198 @@
+/* Estilos Base del Navbar */
+.navbar {
+  background-color: #000 !important;
+  padding: 0.5rem 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: relative; /* Necesario para el dropdown de búsqueda */
+}
+
+/* Logo Apple */
+.navbar-brand img {
+  height: 100px; /* Reducido para mejor proporción */
+  width: auto;
+  transition: transform 0.3s ease;
+  margin-right: 20px;
+}
+
+.navbar-brand:hover img {
+  transform: scale(1.1);
+}
+
+/* Barra de Búsqueda Mejorada */
+.search-container {
+  width: 300px;
+  margin: 0 1.5rem;
+  position: relative;
+}
+
+.search-input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 18px;
+  color: #fff;
+  padding: 8px 20px 8px 40px;
+  width: 100%;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 300;
+}
+
+.search-input:focus {
+  background: rgba(255, 255, 255, 0.15);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  z-index: 2;
+}
+
+/* Dropdown de Sugerencias */
+.search-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #1d1d1f;
+  border-radius: 0 0 18px 18px;
+  z-index: 1000;
+  max-height: 400px;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border: 1px solid #333;
+  border-top: none;
+}
+
+.suggestion-item {
+  padding: 12px 20px;
+  color: #f5f5f7;
+  cursor: pointer;
+  border-bottom: 1px solid #333;
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+}
+
+.suggestion-item:hover {
+  background: #2c2c2e;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item .price {
+  color: #86868b;
+  font-weight: 500;
+}
+
+/* Items de Navegación */
+.nav-link {
+  color: #f5f5f7 !important;
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  padding: 8px 16px !important;
+  margin: 0 4px;
+  transition: all 0.3s ease;
+  border-radius: 18px;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.nav-link.active {
+  color: #fff !important;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Iconos de Navegación */
+.nav-icons .nav-link {
+  padding: 8px 12px !important;
+  display: flex;
+  align-items: center;
+  border-radius: 50%;
+  margin: 0 2px;
+}
+
+.nav-icons .bi {
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover .bi {
+  transform: scale(1.1);
+  color: #fff;
+}
+
+/* Carrito de Compras */
+.cart-widget {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #ff2d55;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .navbar {
+    padding: 0.5rem 1rem;
+  }
+  
+  .search-container {
+    margin: 12px 0;
+    width: 100%;
+    order: 3;
+    flex: 0 0 100%;
+  }
+  
+  .nav-link {
+    padding: 10px 16px !important;
+    margin: 2px 0;
+  }
+  
+  .nav-icons {
+    margin-left: auto;
+  }
+  
+  .search-suggestions {
+    width: 100%;
+  }
+}
+
+/* Animación para el navbar */
+@keyframes fadeIn {
+  from { opacity: 0.9; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.navbar {
+  animation: fadeIn 0.3s ease-out;
+}

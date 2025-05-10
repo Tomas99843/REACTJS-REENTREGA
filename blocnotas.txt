@@ -1,0 +1,76 @@
+Propiedades,props, props en react
+Estados y hooks,caracteristicas de los hooks,componentes de presentacion,componentes de contenedores
+Props y children,ciclos de vida, hooks como useState,useEffect,useContext,useRef,render y efectos,contador con boton
+Promise,Mock Asyn Service,Mapmetodo map,catalogo con maps y promises
+Paradigmas de comunicación,HTTP / REST / Fetch,CORS
+CustomHooks,children,patrones,high order components,render props,diferencias entre render props y HOC
+Routing,React router,trabajar con react router en esta entrega,agregar un router a mi app, navegar a una ruta(con parametros estaticos,navlink,)
+
+Consigna(si biene escribo por aca esta consigna, se tiene en cuenta todo lo que describi anteriormente):
+Configurar en App.js el routing usando un BrowserRouter de tu aplicacion con react-router-dom
+
+Componentes:
+Navbar con cart,catalogo,detalle de producto
+
+Objetivos:
+Debo desarrollar la navegabilidad basica de la aplicaicon,demostrando que la app permite ver el catalogo y navegar a un detalle.
+
+Se debe entregar.
+
+Rutas a configurar
+‘/’ navega a <ItemListContainer />
+‘/category/:id’  <ItemListContainer />
+‘/item/:id’ navega a <ItemDetailContainer />
+
+Links a configurar
+Clickear en el brand debe navegar a ‘/’
+Clickear un Item.js debe navegar a /item/:id
+Clickear en una categoría del navbar debe navegar a /category/:categoryId 
+
+├──public/
+   ├──images 
+├──src/
+   ├── assets/
+       ├──vite.svg     
+   ├── components/
+       ├──Cart/  
+          ├──CartWidget.css
+          ├──CartWidget.jsx
+       ├──Header/  
+          ├──Header.jsx    
+       ├──Item/
+          ├──Item.css 
+          ├──Item.jsx 
+          ├──ItemDetail.css
+          ├──ItemDetail.jsx
+          ├──ItemList.jsx
+          ├──ItemList.css 
+       ├──NavBar/
+          ├──NavBar.css
+          ├──NavBar.jsx  
+   ├──containers/                 
+      ├──ItemDetailContainer.jsx
+      ├──ItemListContainer.jsx
+   ├──context/             
+      ├──CartContext.js    
+   ├──pages/
+      ├──CartPage.css
+      ├──CartPage.jsx
+      ├──CategoryPage.jsx
+      ├──ItemDetailPage.jsx 
+   ├──services
+      ├──products.js
+   ├──styles
+      ├──App.css
+      ├──index.css
+├──App.jsx
+├──main.jsx
+├──.gitignore
+├──eslint.config.js
+├──index.html
+├──package-lock.json
+├──package.json
+├──README.md
+├──vite.config.js
+
+
