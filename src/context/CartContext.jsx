@@ -1,77 +1,65 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useMemo, useContext } from 'react';
 
-// 1. Contexto creado correctamente
 export const CartContext = createContext();
 
-// 2. Proveedor mejorado
 export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const savedCart = localStorage.getItem('cart');
-        return savedCart ? JSON.parse(savedCart) : [];
-      } catch (error) {
-        console.error('Error reading cart from localStorage:', error);
-        return [];
-      }
-    }
-    return [];
-  });
+  const [cart, setCart] = useState([]);
 
+  // 1. Cargar carrito al iniciar
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('cart', JSON.stringify(cart));
+    try {
+      const savedCart = localStorage.getItem('cart');
+      if (savedCart) setCart(JSON.parse(savedCart));
+    } catch (error) {
+      console.error("Error loading cart:", error);
+      localStorage.removeItem('cart');
     }
+  }, []);
+
+  // 2. Guardar cambios
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
+  // 3. Funciones del carrito
   const addToCart = (product, quantity) => {
-    setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.id === product.id);
-      
-      if (existingItem && existingItem.quantity + quantity > product.stock) {
-        alert(`No hay suficiente stock. Máximo disponible: ${product.stock}`);
-        return prevCart;
+    setCart(prev => {
+      const exists = prev.find(item => item.id === product.id);
+      if (exists && exists.quantity + quantity > product.stock) {
+        alert(`Stock insuficiente. Máximo: ${product.stock}`);
+        return prev;
       }
-
-      return existingItem
-        ? prevCart.map((item) =>
-            item.id === product.id
-              ? { ...item, quantity: item.quantity + quantity }
+      return exists
+        ? prev.map(item => 
+            item.id === product.id 
+              ? { ...item, quantity: item.quantity + quantity } 
               : item
           )
-        : [...prevCart, { ...product, quantity }];
+        : [...prev, { ...product, quantity }];
     });
   };
 
   const removeFromCart = (productId) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
+    setCart(prev => prev.filter(item => item.id !== productId));
   };
 
   const clearCart = () => setCart([]);
 
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  // 4. Valores del contexto
+  const value = useMemo(() => ({
+    cart,
+    addToCart,
+    removeFromCart,
+    clearCart,
+    totalItems: cart.reduce((total, item) => total + item.quantity, 0),
+    totalPrice: cart.reduce((total, item) => total + (item.price * item.quantity), 0)
+  }), [cart]);
 
-  // 3. Retorno con JSX válido
-  return (
-    <CartContext.Provider
-      value={{
-        cart,
-        addToCart,
-        removeFromCart,
-        clearCart,
-        totalItems,
-      }}
-    >
-      {children}
-    </CartContext.Provider>
-  );
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
 
-// 4. Hook personalizado
 export const useCart = () => {
   const context = useContext(CartContext);
-  if (!context) {
-    throw new Error('useCart must be used within a CartProvider');
-  }
+  if (!context) throw new Error('useCart debe usarse dentro de CartProvider');
   return context;
 };

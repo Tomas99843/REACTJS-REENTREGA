@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import ItemList from '../components/Item/ItemList';
-import { products } from '../services/products'; // Importa directamente el array
+import { products } from '../services/products';
 import './SearchPage.css'; 
 
 const SearchPage = () => {
