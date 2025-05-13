@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { CartProvider } from "./context/CartContext"; // Importación faltante
+import { CartProvider } from "./context/CartContext"; 
 import NavBar from "./components/NavBar/NavBar";
 import CategoryPage from "./pages/CategoryPage";
 import ItemDetailPage from "./pages/ItemDetailPage";
@@ -15,12 +15,12 @@ function App() {
   useEffect(() => {
     getProducts()
       .then(data => setProducts(data))
-      .catch(error => console.error("Error loading products:", error));
+      .catch(error => console.error("Error cargando productos:",error));
   }, []);
 
   return (
     <BrowserRouter>
-      <CartProvider> {/* Ahora está correctamente importado */}
+      <CartProvider>
         <NavBar products={products} />
         
         <Routes>

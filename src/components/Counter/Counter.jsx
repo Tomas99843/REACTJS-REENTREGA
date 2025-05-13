@@ -5,8 +5,8 @@ import './Counter.css';
 const Counter = ({ 
   initial = 1, 
   stock = 10, 
-  onQuantityChange,  // Nueva prop: notifica cambios de cantidad al padre
-  showAddButton = false // Opcional: permite ocultar el botón "Agregar"
+  onQuantityChange,  
+  showAddButton = false 
 }) => {
   const [quantity, setQuantity] = useState(initial);
 
@@ -24,13 +24,13 @@ const Counter = ({
       return;
     }
     setQuantity(newQuantity);
-    if (onQuantityChange) onQuantityChange(newQuantity); // Notifica al padre
+    if (onQuantityChange) onQuantityChange(newQuantity); 
   };
 
   const handleDecrement = () => {
     const newQuantity = Math.max(1, quantity - 1);
     setQuantity(newQuantity);
-    if (onQuantityChange) onQuantityChange(newQuantity); // Notifica al padre
+    if (onQuantityChange) onQuantityChange(newQuantity); 
   };
 
   return (
@@ -55,7 +55,7 @@ const Counter = ({
         </button>
       </div>
 
-      {/* Botón "Agregar" (opcional, si no se usa en ItemDetailContainer) */}
+     
       {showAddButton && (
         <button 
           onClick={() => onAdd(quantity)}

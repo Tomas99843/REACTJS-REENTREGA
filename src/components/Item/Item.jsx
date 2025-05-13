@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link } from "react-router-dom";
-import Counter from "../Counter/Counter"; // Asegúrate de que la ruta sea correcta
+import Counter from "../Counter/Counter"; 
 import "./Item.css";
 
 const Item = ({ product }) => {
   const handleAddToCart = (quantity) => {
     console.log(`Agregando ${quantity} ${product.title} al carrito`);
-    // Aquí luego conectarás con tu CartContext
+   
   };
 
   return (
@@ -17,9 +17,9 @@ const Item = ({ product }) => {
         <p className="item-price">${product.price}</p>
       </Link>
       
-      {/* Componente Counter integrado */}
+     
       <Counter 
-        stock={product.stock || 10} // Usa el stock del producto o 10 por defecto
+        stock={product.stock || 10} 
         onAdd={handleAddToCart}
       />
     </div>

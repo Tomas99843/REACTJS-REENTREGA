@@ -1,4 +1,4 @@
-/* src/pages/SearchPage.css */
+
 .search-page-container {
   max-width: 1200px;
   margin: 2rem auto;
@@ -7,7 +7,7 @@
 
 .search-page-title {
   font-size: 1.8rem;
-  color: #1d1d1f; /* Color de texto Apple */
+  color: #1d1d1f;
   margin-bottom: 2rem;
   font-weight: 600;
   text-align: center;
@@ -23,11 +23,11 @@
 .no-results-message {
   text-align: center;
   font-size: 1.2rem;
-  color: #86868b; /* Gris Apple */
+  color: #86868b;
   margin-top: 3rem;
 }
 
-/* Efecto hover para los items */
+
 .search-results-grid .item-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);

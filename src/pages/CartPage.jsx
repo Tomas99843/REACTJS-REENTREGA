@@ -1,4 +1,4 @@
-// src/pages/CartPage.jsx
+
 import React from 'react';
 import { useCart } from "../context/CartContext";
 import { Link } from "react-router-dom";
@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 const CartPage = () => {
   const { cart, removeFromCart, totalItems } = useCart();
 
-  // Calcular el total a pagar
+
   const totalPrice = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0

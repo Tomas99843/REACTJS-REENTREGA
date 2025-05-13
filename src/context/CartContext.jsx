@@ -1,11 +1,8 @@
 import React, { createContext, useState, useEffect, useMemo, useContext } from 'react';
 
 export const CartContext = createContext();
-
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
-
-  // Cargar carrito desde localStorage al iniciar
   useEffect(() => {
     const loadCart = () => {
       try {
@@ -21,28 +18,20 @@ export const CartProvider = ({ children }) => {
         localStorage.removeItem('cart');
       }
     };
-
     loadCart();
   }, []);
-
-  // Guardar carrito en localStorage cuando cambia
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
-
-  // Agregar producto al carrito
   const addToCart = (product, quantity) => {
     setCart(prev => {
       const exists = prev.find(item => item.id === product.id);
       const newQuantity = exists ? exists.quantity + quantity : quantity;
-      
       if (newQuantity > product.stock) {
         alert(`Stock máximo: ${product.stock} unidades disponibles`);
         return prev;
       }
-
       alert(`${quantity} ${product.title} agregado al carrito`);
-      
       return exists
         ? prev.map(item => 
             item.id === product.id 
@@ -52,26 +41,18 @@ export const CartProvider = ({ children }) => {
         : [...prev, { ...product, quantity }];
     });
   };
-
-  // Remover producto del carrito
   const removeFromCart = (productId) => {
     setCart(prev => prev.filter(item => item.id !== productId));
     alert('Producto removido del carrito');
   };
-
-  // Vaciar carrito completamente
   const clearCart = () => {
     setCart([]);
-    alert('Carrito vaciado');
+    alert('Carrito vacio');
   };
-
-  // Calcular totales
   const { totalItems, totalPrice } = useMemo(() => ({
     totalItems: cart.reduce((total, item) => total + item.quantity, 0),
     totalPrice: cart.reduce((total, item) => total + (item.price * item.quantity), 0)
   }), [cart]);
-
-  // Valor del contexto
   const value = {
     cart,
     addToCart,
@@ -88,7 +69,7 @@ export const CartProvider = ({ children }) => {
   );
 };
 
-// Hook personalizado para usar el contexto
+
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {

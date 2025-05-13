@@ -1,12 +1,10 @@
-// Definimos constantes para las categorías para evitar errores de escritura
+
 export const CATEGORIES = {
   SMARTPHONES: 'iphones',
   LAPTOPS: 'macbooks',
   SMARTWATCHES: 'smartwatches'
 };
-
 const products = [
-  // Apple Watch Models
   {
     id: 1,
     title: "Apple Watch Series 10",
@@ -34,8 +32,6 @@ const products = [
     image: "/images/WatchAppleSE2nd.webp",
     stock: 10
   },
-
-  // MacBook Models (CORREGIDO: cambiado de SMARTWATCHES a LAPTOPS)
   {
     id: 4,
     title: "MacBook Air 13-inch M2",
@@ -90,8 +86,6 @@ const products = [
     image: "/images/MacBookPro16inchM4Max.webp",
     stock: 10
   },
-
-  // iPhone Models (CORREGIDO: cambiado de SMARTWATCHES a SMARTPHONES)
   {
     id: 10,
     title: "iPhone 16",
@@ -175,7 +169,6 @@ const products = [
   }
 ];
 
-// Función para obtener nombres amigables de categoría
 const getCategoryName = (categoryId) => {
   const categoryNames = {
     [CATEGORIES.SMARTWATCHES]: 'Watch',
@@ -185,7 +178,6 @@ const getCategoryName = (categoryId) => {
   return categoryNames[categoryId] || categoryId;
 };
 
-// Funciones de servicio con manejo de errores
 export const getProducts = () => Promise.resolve([...products]);
 
 export const getProductById = (id) => {
@@ -204,7 +196,6 @@ export const getProductsByCategory = (categoryId) => {
   return Promise.resolve(products.filter(item => item.category === categoryId));
 };
 
-// Función para categorías formateadas (NavBar)
 export const getFormattedCategories = () => {
   const uniqueCategories = [...new Set(products.map(p => p.category))];
   return uniqueCategories.map(cat => ({
@@ -213,5 +204,4 @@ export const getFormattedCategories = () => {
   }));
 };
 
-// Exportación directa del array de productos
 export { products };

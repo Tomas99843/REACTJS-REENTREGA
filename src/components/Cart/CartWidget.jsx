@@ -7,7 +7,7 @@ const CartWidget = () => {
 
   return (
     <div className="cart-widget">
-      <i className="bi bi-cart"></i> {/* Ícono de carrito con clase CSS */}
+      <i className="bi bi-cart"></i> 
       {totalItems > 0 && <span className="cart-badge">{totalItems}</span>}
     </div>
   );

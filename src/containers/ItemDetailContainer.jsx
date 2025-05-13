@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { getProductById } from '@services/products';  // Usando alias configurado en vite.config.js
-import { useCart } from '@context/CartContext';       // Modificado para usar alias
-import ItemDetail from '@components/Item/ItemDetail'; // Usando alias
-import Counter from '@components/Counter/Counter';    // Usando alias
+import { getProductById } from '@services/products'; 
+import { useCart } from '@context/CartContext';      
+import ItemDetail from '@components/Item/ItemDetail'; 
+import Counter from '@components/Counter/Counter';   
 import './ItemDetailContainer.css';
 
 const ItemDetailContainer = () => {
@@ -19,7 +19,7 @@ const ItemDetailContainer = () => {
         setProduct(productData);
       } catch (error) {
         console.error("Error loading product:", error);
-        // Puedes agregar un estado de error aquí si lo necesitas
+        
       }
     };
 
@@ -30,14 +30,14 @@ const ItemDetailContainer = () => {
     if (!product) return;
     
     addToCart(product, quantity);
-    // Considera usar react-toastify en lugar de alert
+   
     alert(`${quantity} ${product.title} agregado(s) al carrito!`);
   };
 
   if (!product) {
     return (
       <div className="loading-spinner">
-        {/* Agrega aquí un spinner de carga si lo tienes */}
+       
         Cargando producto...
       </div>
     );

@@ -5,14 +5,14 @@ import path from 'path';
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: true,         // Permite acceso desde la red local
-    port: 5173,         // Puerto por defecto
-    open: true,         // Abre automáticamente el navegador
-    strictPort: true,   // Evita cambiar el puerto si está ocupado
+    host: true,        
+    port: 5173,        
+    open: true,        
+    strictPort: true,  
   },
   resolve: {
     alias: {
-      // Aliases para todas las carpetas importantes
+      
       '@': path.resolve(__dirname, './src'),
       '@components': path.resolve(__dirname, './src/components'),
       '@context': path.resolve(__dirname, './src/context'),
@@ -23,9 +23,9 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: 'dist',     // Carpeta de producción
-    emptyOutDir: true,  // Limpia la carpeta antes de cada build
-    sourcemap: true,    // Genera sourcemaps para debugging
+    outDir: 'dist',     
+    emptyOutDir: true,  
+    sourcemap: true,    
   },
-  base: '/',           // Ruta base para despliegue (ajusta si usas subdirectorio)
+  base: '/',          
 });
