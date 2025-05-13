@@ -1,0 +1,143 @@
+/* ItemDetailContainer.css */
+
+.item-detail-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Contenedor principal del producto */
+.product-detail-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+/* Sección de imagen */
+.product-image-container {
+  background: #f5f5f7;
+  border-radius: 18px;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  aspect-ratio: 1/1;
+}
+
+.product-image-container img {
+  max-width: 100%;
+  max-height: 500px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+
+/* Sección de información */
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.product-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin: 0;
+}
+
+.product-price {
+  font-size: 1.8rem;
+  color: #1d1d1f;
+  font-weight: 500;
+}
+
+.product-price::before {
+  content: "$";
+  margin-right: 2px;
+}
+
+.product-description {
+  color: #86868b;
+  line-height: 1.6;
+  font-size: 1.1rem;
+}
+
+.product-stock {
+  color: #06c;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+/* Controles de cantidad y botón */
+.cart-actions {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.add-to-cart-btn {
+  background: #0071e3;
+  color: white;
+  border: none;
+  border-radius: 980px;
+  padding: 0.8rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-grow: 1;
+  max-width: 300px;
+}
+
+.add-to-cart-btn:hover {
+  background: #0077ed;
+  transform: translateY(-2px);
+}
+
+.add-to-cart-btn:active {
+  transform: translateY(0);
+}
+
+.add-to-cart-btn.disabled {
+  background: #e0e0e0;
+  color: #a0a0a0;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Loading state */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  color: #86868b;
+  font-size: 1.2rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .product-detail-wrapper {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .product-title {
+    font-size: 2rem;
+  }
+  
+  .cart-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .add-to-cart-btn {
+    width: 100%;
+    max-width: none;
+  }
+}

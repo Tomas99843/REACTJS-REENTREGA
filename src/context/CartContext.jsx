@@ -5,61 +5,94 @@ export const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
 
-  // 1. Cargar carrito al iniciar
+  // Cargar carrito desde localStorage al iniciar
   useEffect(() => {
-    try {
-      const savedCart = localStorage.getItem('cart');
-      if (savedCart) setCart(JSON.parse(savedCart));
-    } catch (error) {
-      console.error("Error loading cart:", error);
-      localStorage.removeItem('cart');
-    }
+    const loadCart = () => {
+      try {
+        const savedCart = localStorage.getItem('cart');
+        if (savedCart) {
+          const parsedCart = JSON.parse(savedCart);
+          if (Array.isArray(parsedCart)) {
+            setCart(parsedCart);
+          }
+        }
+      } catch (error) {
+        console.error("Error loading cart:", error);
+        localStorage.removeItem('cart');
+      }
+    };
+
+    loadCart();
   }, []);
 
-  // 2. Guardar cambios
+  // Guardar carrito en localStorage cuando cambia
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
-  // 3. Funciones del carrito
+  // Agregar producto al carrito
   const addToCart = (product, quantity) => {
     setCart(prev => {
       const exists = prev.find(item => item.id === product.id);
-      if (exists && exists.quantity + quantity > product.stock) {
-        alert(`Stock insuficiente. Máximo: ${product.stock}`);
+      const newQuantity = exists ? exists.quantity + quantity : quantity;
+      
+      if (newQuantity > product.stock) {
+        alert(`Stock máximo: ${product.stock} unidades disponibles`);
         return prev;
       }
+
+      alert(`${quantity} ${product.title} agregado al carrito`);
+      
       return exists
         ? prev.map(item => 
             item.id === product.id 
-              ? { ...item, quantity: item.quantity + quantity } 
+              ? { ...item, quantity: newQuantity }
               : item
           )
         : [...prev, { ...product, quantity }];
     });
   };
 
+  // Remover producto del carrito
   const removeFromCart = (productId) => {
     setCart(prev => prev.filter(item => item.id !== productId));
+    alert('Producto removido del carrito');
   };
 
-  const clearCart = () => setCart([]);
+  // Vaciar carrito completamente
+  const clearCart = () => {
+    setCart([]);
+    alert('Carrito vaciado');
+  };
 
-  // 4. Valores del contexto
-  const value = useMemo(() => ({
-    cart,
-    addToCart,
-    removeFromCart,
-    clearCart,
+  // Calcular totales
+  const { totalItems, totalPrice } = useMemo(() => ({
     totalItems: cart.reduce((total, item) => total + item.quantity, 0),
     totalPrice: cart.reduce((total, item) => total + (item.price * item.quantity), 0)
   }), [cart]);
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+  // Valor del contexto
+  const value = {
+    cart,
+    addToCart,
+    removeFromCart,
+    clearCart,
+    totalItems,
+    totalPrice
+  };
+
+  return (
+    <CartContext.Provider value={value}>
+      {children}
+    </CartContext.Provider>
+  );
 };
 
+// Hook personalizado para usar el contexto
 export const useCart = () => {
   const context = useContext(CartContext);
-  if (!context) throw new Error('useCart debe usarse dentro de CartProvider');
+  if (!context) {
+    throw new Error('useCart debe usarse dentro de CartProvider');
+  }
   return context;
 };

@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import Swal from 'sweetalert2';
 import './Counter.css';
 
-const Counter = ({ initial = 1, stock = 10, onAdd }) => {
+const Counter = ({ 
+  initial = 1, 
+  stock = 10, 
+  onQuantityChange,  // Nueva prop: notifica cambios de cantidad al padre
+  showAddButton = false // Opcional: permite ocultar el botón "Agregar"
+}) => {
   const [quantity, setQuantity] = useState(initial);
 
   const handleIncrement = () => {
@@ -12,31 +17,20 @@ const Counter = ({ initial = 1, stock = 10, onAdd }) => {
         title: '¡Stock máximo!',
         text: `Solo dispones de ${stock} unidades`,
         icon: 'warning',
-        confirmButtonColor: '#0071e3', // Azul Apple
-        background: '#ffffff', // Fondo blanco
-        customClass: {
-          title: 'swal-title', // Clase para personalizar
-          confirmButton: 'swal-confirm' // Clase para el botón
-        }
+        confirmButtonColor: '#0071e3',
+        background: '#ffffff',
+        timer: 2000
       });
       return;
     }
     setQuantity(newQuantity);
+    if (onQuantityChange) onQuantityChange(newQuantity); // Notifica al padre
   };
 
   const handleDecrement = () => {
-    setQuantity(Math.max(1, quantity - 1));
-  };
-
-  const handleAdd = () => {
-    onAdd(quantity);
-    Swal.fire({
-      title: '¡Añadido!',
-      text: `${quantity} producto(s) agregado(s) al carrito`,
-      icon: 'success',
-      confirmButtonColor: '#0071e3',
-      timer: 1500 // Cierre automático
-    });
+    const newQuantity = Math.max(1, quantity - 1);
+    setQuantity(newQuantity);
+    if (onQuantityChange) onQuantityChange(newQuantity); // Notifica al padre
   };
 
   return (
@@ -60,13 +54,17 @@ const Counter = ({ initial = 1, stock = 10, onAdd }) => {
           +
         </button>
       </div>
-      <button 
-        onClick={handleAdd}
-        className="counter-add-btn"
-        disabled={stock === 0}
-      >
-        <i className="bi bi-cart-plus"></i> Agregar
-      </button>
+
+      {/* Botón "Agregar" (opcional, si no se usa en ItemDetailContainer) */}
+      {showAddButton && (
+        <button 
+          onClick={() => onAdd(quantity)}
+          className="counter-add-btn"
+          disabled={stock === 0}
+        >
+          <i className="bi bi-cart-plus"></i> Agregar
+        </button>
+      )}
     </div>
   );
 };

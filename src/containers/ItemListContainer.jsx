@@ -1,16 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { getProducts, getProductsByCategory } from "../services/products";
+import React, { useEffect, useState, useMemo } from "react";
+import { useParams, Link } from "react-router-dom";
+import { getProducts, getProductsByCategory } from "../../src/services/products"
 import ItemList from "../components/Item/ItemList";
-import Loader from "./Loader"; // Asume que tienes un componente Loader
-import ErrorMessage from "./ErrorMessage"; // Componente para mostrar errores
-import "./ItemListContainer.css"; // Estilos específicos
+import Loader from "./Loader";
+import ErrorMessage from "./ErrorMessage";
+import "./ItemListContainer.css";
 
-const ItemListContainer = () => {
-  const { categoryId } = useParams();
+const ItemListContainer = ({ categoryId: propCategoryId }) => {
+  const { categoryId: urlCategoryId } = useParams();
+  const categoryId = propCategoryId || urlCategoryId;
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const categoryName = useMemo(() => getCategoryName(categoryId), [categoryId]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -18,7 +21,6 @@ const ItemListContainer = () => {
         setLoading(true);
         setError(null);
         
-        // Usamos la función específica por categoría si existe categoryId
         const productsData = categoryId 
           ? await getProductsByCategory(categoryId)
           : await getProducts();
@@ -35,24 +37,25 @@ const ItemListContainer = () => {
     fetchProducts();
   }, [categoryId]);
 
-  // Estados de carga y error
   if (loading) return <Loader />;
   if (error) return <ErrorMessage message={error} />;
-  if (products.length === 0) return <div className="no-products">No se encontraron productos</div>;
+  if (products.length === 0) return (
+    <div className="no-products">
+      <p>No hay productos en esta categoría.</p>
+      <Link to="/">Ver todos los productos</Link>
+    </div>
+  );
 
   return (
     <div className="item-list-container">
       <h2 className="category-title">
-        {categoryId 
-          ? `Productos ${getCategoryName(categoryId)}` 
-          : "Todos los productos"}
+        {categoryId ? `Productos ${categoryName}` : "Todos los productos"}
       </h2>
-      <ItemList products={products} />
+      <ItemList key={categoryId || 'all-products'} products={products} />
     </div>
   );
 };
 
-// Función helper para mostrar nombres amigables de categoría
 const getCategoryName = (categoryId) => {
   const categoryNames = {
     iphones: "iPhone",

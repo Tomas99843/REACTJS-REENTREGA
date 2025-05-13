@@ -12,7 +12,7 @@ const NavBar = ({ products = [] }) => {
   const navigate = useNavigate();
 
   // Categorías dinámicas usando la función centralizada
-  const categories = useMemo(() => getFormattedCategories(), [products]);
+  const categories = useMemo(() => getFormattedCategories(), []);
 
   // Búsqueda predictiva con debounce mejorado
   useEffect(() => {
@@ -48,19 +48,13 @@ const NavBar = ({ products = [] }) => {
 
   // Handlers optimizados
   const handleSearch = useCallback((e) => {
-    e.preventDefault();
-    if (searchTerm.trim()) {
-      navigate(`/search?query=${encodeURIComponent(searchTerm)}`, {
-        state: { 
-          searchResults: products.filter(p => 
-            p.title.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-        }
-      });
-      setSearchTerm('');
-      setSuggestions([]);
-    }
-  }, [searchTerm, products, navigate]);
+  e.preventDefault();
+  if (searchTerm.trim()) {
+    navigate(`/search?query=${encodeURIComponent(searchTerm)}`);
+    setSearchTerm('');
+    setSuggestions([]);
+  }
+}, [searchTerm, navigate]);
 
   const handleSuggestionClick = useCallback((productId) => {
     navigate(`/item/${productId}`);
