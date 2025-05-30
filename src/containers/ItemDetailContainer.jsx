@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { getProductById } from '@services/products'; 
-import { useCart } from '@context/CartContext';      
-import ItemDetail from '@components/Item/ItemDetail'; 
-import Counter from '@components/Counter/Counter';   
+import { useParams, useNavigate } from 'react-router-dom';
+import { getProductById } from '@services/products';
+import { useCart } from '@context/CartContext';
+import ItemDetail from '@components/Item/ItemDetail';
+import Counter from '@components/Counter/Counter';
+import Loader from '@containers/Loader';
 import './ItemDetailContainer.css';
 
 const ItemDetailContainer = () => {
   const { itemId } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
 
@@ -19,50 +22,45 @@ const ItemDetailContainer = () => {
         setProduct(productData);
       } catch (error) {
         console.error("Error loading product:", error);
-        
+        navigate("/not-found", { replace: true });
+      } finally {
+        setLoading(false);
       }
     };
 
     loadProduct();
-  }, [itemId]);
+  }, [itemId, navigate]);
 
   const handleAddToCart = () => {
-    if (!product) return;
-    
-    addToCart(product, quantity);
-   
-    alert(`${quantity} ${product.title} agregado(s) al carrito!`);
+    addToCart({ ...product, quantity });
+    navigate("/cart", { state: { addedItem: product.title, quantity } });
   };
 
-  if (!product) {
-    return (
-      <div className="loading-spinner">
-       
-        Cargando producto...
-      </div>
-    );
-  }
+  if (loading) return <Loader />;
 
   return (
-    <div className="item-detail-container">
-      <ItemDetail product={product} />
-      
-      <div className="cart-actions">
-        <Counter 
-          stock={product.stock}
-          initial={1}
-          onQuantityChange={setQuantity}
-          showAddButton={false}
-        />
-        <button 
-          onClick={handleAddToCart}
-          className={`add-to-cart-btn ${quantity > product.stock ? 'disabled' : ''}`}
-          disabled={quantity > product.stock}
-          aria-label="Agregar al carrito"
-        >
-          Agregar al carrito {quantity > 1 && `(${quantity})`}
-        </button>
-      </div>
+    <div className="item-detail-page">
+      {product && (
+        <>
+          <ItemDetail product={product} />
+          <div className="purchase-section">
+            <Counter
+              stock={product.stock}
+              initial={1}
+              onQuantityChange={setQuantity}
+            />
+            <button
+              onClick={handleAddToCart}
+              disabled={quantity > product.stock}
+              className="add-to-cart-btn"
+            >
+              {quantity > product.stock 
+                ? "Sin stock suficiente" 
+                : `Agregar ${quantity} al carrito`}
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };

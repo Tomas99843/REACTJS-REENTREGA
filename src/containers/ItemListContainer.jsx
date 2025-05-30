@@ -1,68 +1,34 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { useParams, Link } from "react-router-dom";
-import { getProducts, getProductsByCategory } from "../../src/services/products"
-import ItemList from "../components/Item/ItemList";
-import Loader from "./Loader";
-import ErrorMessage from "./ErrorMessage";
-import "./ItemListContainer.css";
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { getProducts, getProductsByCategory } from '@services/products';
+import ItemList from '@components/Item/ItemList';
+import Loader from '@containers/Loader';
 
-const ItemListContainer = ({ categoryId: propCategoryId }) => {
-  const { categoryId: urlCategoryId } = useParams();
-  const categoryId = propCategoryId || urlCategoryId;
+const ItemListContainer = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const categoryName = useMemo(() => getCategoryName(categoryId), [categoryId]);
+  const { categoryId } = useParams();
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        const productsData = categoryId 
-          ? await getProductsByCategory(categoryId)
-          : await getProducts();
-        
-        setProducts(productsData);
-      } catch (err) {
-        console.error("Error fetching products:", err);
-        setError("Error al cargar los productos. Por favor intenta nuevamente.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    setLoading(true);
+    
+    const fetchProducts = categoryId 
+      ? getProductsByCategory(categoryId)
+      : getProducts();
 
-    fetchProducts();
+    fetchProducts
+      .then(data => setProducts(data))
+      .catch(error => console.error(error))
+      .finally(() => setLoading(false));
   }, [categoryId]);
 
   if (loading) return <Loader />;
-  if (error) return <ErrorMessage message={error} />;
-  if (products.length === 0) return (
-    <div className="no-products">
-      <p>No hay productos en esta categoría.</p>
-      <Link to="/">Ver todos los productos</Link>
-    </div>
-  );
 
   return (
     <div className="item-list-container">
-      <h2 className="category-title">
-        {categoryId ? `Productos ${categoryName}` : "Todos los productos"}
-      </h2>
-      <ItemList key={categoryId || 'all-products'} products={products} />
+      <ItemList products={products} />
     </div>
   );
-};
-
-const getCategoryName = (categoryId) => {
-  const categoryNames = {
-    iphones: "iPhone",
-    macbooks: "Mac",
-    smartwatches: "Apple Watch"
-  };
-  return categoryNames[categoryId] || categoryId;
 };
 
 export default ItemListContainer;

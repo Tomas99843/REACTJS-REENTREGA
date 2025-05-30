@@ -1,60 +1,59 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Link, NavLink, useNavigate } from "react-router-dom";
-import CartWidget from "../Cart/CartWidget";
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Container, Nav, Navbar, Form, InputGroup, Button } from 'react-bootstrap';
-import { CATEGORIES, getFormattedCategories } from "../../services/products";
-import "./NavBar.css";
+import { CATEGORIES, getFormattedCategories, searchProducts } from '@services/products';
+import CartWidget from '../Cart/CartWidget';
+import './NavBar.css';
 
-const NavBar = ({ products = [] }) => {
+const NavBar = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
 
-  // Categorías dinámicas usando la función centralizada
-  const categories = useMemo(() => getFormattedCategories(), []);
-
-  // Búsqueda predictiva con debounce mejorado
+  // Cargar categorías al montar
   useEffect(() => {
-    let isMounted = true;
-    const searchDelay = 300;
+    const loadCategories = async () => {
+      try {
+        const loadedCategories = await getFormattedCategories();
+        setCategories(loadedCategories);
+      } catch (error) {
+        console.error("Error loading categories:", error);
+      }
+    };
+    loadCategories();
+  }, []);
 
-    const timer = setTimeout(() => {
-      if (searchTerm.trim().length > 1 && isMounted) {
+  // Búsqueda predictiva
+  useEffect(() => {
+    const delayDebounce = setTimeout(async () => {
+      if (searchTerm.trim().length > 1) {
         setIsSearching(true);
         try {
-          const lowerCaseTerm = searchTerm.toLowerCase();
-          const results = products.filter(product => 
-            product.title.toLowerCase().includes(lowerCaseTerm)
-          );
-          if (isMounted) {
-            setSuggestions(results.slice(0, 5));
-          }
+          const results = await searchProducts(searchTerm);
+          setSuggestions(results.slice(0, 5));
         } catch (error) {
-          console.error("Error en búsqueda:", error);
+          console.error("Search error:", error);
         } finally {
-          if (isMounted) setIsSearching(false);
+          setIsSearching(false);
         }
-      } else if (isMounted) {
+      } else {
         setSuggestions([]);
       }
-    }, searchDelay);
+    }, 300);
 
-    return () => {
-      isMounted = false;
-      clearTimeout(timer);
-    };
-  }, [searchTerm, products]);
+    return () => clearTimeout(delayDebounce);
+  }, [searchTerm]);
 
-  // Handlers optimizados
   const handleSearch = useCallback((e) => {
-  e.preventDefault();
-  if (searchTerm.trim()) {
-    navigate(`/search?query=${encodeURIComponent(searchTerm)}`);
-    setSearchTerm('');
-    setSuggestions([]);
-  }
-}, [searchTerm, navigate]);
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      navigate(`/search?query=${encodeURIComponent(searchTerm)}`);
+      setSearchTerm('');
+      setSuggestions([]);
+    }
+  }, [searchTerm, navigate]);
 
   const handleSuggestionClick = useCallback((productId) => {
     navigate(`/item/${productId}`);
@@ -62,7 +61,6 @@ const NavBar = ({ products = [] }) => {
     setSuggestions([]);
   }, [navigate]);
 
-  // Renderizado optimizado
   return (
     <Navbar expand="lg" className="navbar-dark bg-dark sticky-top">
       <Container fluid>
@@ -87,21 +85,18 @@ const NavBar = ({ products = [] }) => {
                   className={({ isActive }) => 
                     `nav-link ${isActive ? "active fw-bold" : ""}`
                   }
-                  state={{ categoryName: category.name }}
                 >
-                  {category.name}
+                  {category.name} ({category.count})
                 </NavLink>
               </Nav.Item>
             ))}
           </Nav>
 
-          {/* Sistema de búsqueda */}
           <Form onSubmit={handleSearch} className="search-form">
             <InputGroup>
               <Form.Control
                 type="search"
                 placeholder="Buscar productos..."
-                aria-label="Buscar"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 disabled={isSearching}
@@ -110,13 +105,8 @@ const NavBar = ({ products = [] }) => {
                 type="submit" 
                 variant="outline-light"
                 disabled={isSearching || !searchTerm.trim()}
-                aria-label="Buscar"
               >
-                {isSearching ? (
-                  <span className="spinner-border spinner-border-sm" />
-                ) : (
-                  <i className="bi bi-search" />
-                )}
+                {isSearching ? 'Buscando...' : 'Buscar'}
               </Button>
             </InputGroup>
 
@@ -127,33 +117,16 @@ const NavBar = ({ products = [] }) => {
                     key={item.id}
                     className="suggestion-item"
                     onClick={() => handleSuggestionClick(item.id)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSuggestionClick(item.id)}
                   >
-                    <span className="suggestion-title">{item.title}</span>
-                    <span className="suggestion-price">${item.price}</span>
+                    {item.title} (${item.price})
                   </div>
                 ))}
               </div>
             )}
           </Form>
 
-          {/* Menú secundario */}
-          <Nav className="secondary-nav">
-            <Nav.Link as={Link} to="/account" className="nav-icon">
-              <i className="bi bi-person" aria-hidden="true" />
-              <span className="visually-hidden">Cuenta</span>
-            </Nav.Link>
-            <Nav.Link as={Link} to="/stores" className="nav-icon">
-              <i className="bi bi-geo-alt" aria-hidden="true" />
-              <span className="visually-hidden">Tiendas</span>
-            </Nav.Link>
-            <Nav.Link as={Link} to="/contact" className="nav-icon">
-              <i className="bi bi-headset" aria-hidden="true" />
-              <span className="visually-hidden">Contacto</span>
-            </Nav.Link>
-            <Nav.Link as={Link} to="/cart" className="nav-icon cart-link">
+          <Nav>
+            <Nav.Link as={Link} to="/cart">
               <CartWidget />
             </Nav.Link>
           </Nav>

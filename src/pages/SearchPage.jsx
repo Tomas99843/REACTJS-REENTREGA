@@ -1,28 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import ItemList from '../components/Item/ItemList';
-import { products } from '../services/products';
-import './SearchPage.css'; 
+import { searchProducts } from '@services/products';
+import ItemList from '@components/Item/ItemList';
+import Loader from '@containers/Loader';
 
-const SearchPage = ({ products }) => {
-  const { search } = useLocation();
-  const query = new URLSearchParams(search).get("query") || "";
+const SearchPage = () => {
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const query = new URLSearchParams(location.search).get('q');
 
-  const searchResults = products.filter(p => 
-    p.title.toLowerCase().includes(query.toLowerCase())
-  );
+  useEffect(() => {
+    const search = async () => {
+      try {
+        const data = await searchProducts(query);
+        setResults(data);
+      } catch (error) {
+        console.error("Search error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    search();
+  }, [query]);
+
+  if (loading) return <Loader />;
 
   return (
-    <div className="search-results">
+    <div className="search-page">
       <h2>Resultados para: "{query}"</h2>
-      {query ? (
-        searchResults.length > 0 ? (
-          <ItemList products={searchResults} />
-        ) : (
-          <p className="no-results">No hay productos que coincidan con "{query}"</p>
-        )
+      {results.length > 0 ? (
+        <ItemList products={results} />
       ) : (
-        <p className="no-query">Ingresa un término de búsqueda</p>
+        <p>No se encontraron productos</p>
       )}
     </div>
   );
