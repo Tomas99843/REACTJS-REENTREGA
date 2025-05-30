@@ -1,6 +1,6 @@
-// Importación para Firebase v8
-import firebase from 'firebase/app';
-import 'firebase/firestore';
+// Importaciones para Firebase v9 (modular)
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "TU_API_KEY",
@@ -11,9 +11,6 @@ const firebaseConfig = {
   appId: "TU_APP_ID"
 };
 
-// Inicialización para v8
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-
-export const db = firebase.firestore();
+// Inicialización para v9
+const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app); // Exporta la instancia de Firestore

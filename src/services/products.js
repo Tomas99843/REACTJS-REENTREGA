@@ -18,7 +18,8 @@ const getCategoryName = (categoryId) => {
 
 export const getProducts = async () => {
   try {
-    const querySnapshot = await getDocs(collection(db, "products"));
+    const productsRef = collection(db, "products"); // Uso correcto de collection con db
+    const querySnapshot = await getDocs(productsRef);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   } catch (error) {
     console.error("Error fetching products:", error);

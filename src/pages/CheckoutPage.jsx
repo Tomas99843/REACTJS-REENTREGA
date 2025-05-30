@@ -19,9 +19,11 @@ const CheckoutPage = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.name) newErrors.name = 'Nombre requerido';
-    if (!formData.phone) newErrors.phone = 'Teléfono requerido';
-    if (!formData.email) {
+    if (!formData.name.trim()) newErrors.name = 'Nombre requerido';
+    if (!formData.lastName.trim()) newErrors.lastName = 'Apellido requerido';
+    if (!formData.phone.trim()) newErrors.phone = 'Teléfono requerido';
+    if (!/^[0-9]{10,15}$/.test(formData.phone)) newErrors.phone = 'Teléfono inválido';
+    if (!formData.email.trim()) {
       newErrors.email = 'Email requerido';
     } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
       newErrors.email = 'Email inválido';
@@ -50,7 +52,8 @@ const CheckoutPage = () => {
           id: item.id,
           title: item.title,
           price: item.price,
-          quantity: item.quantity
+          quantity: item.quantity,
+          image: item.image // Asegúrate de incluir la imagen para el resumen
         })),
         total: totalPrice,
         date: new Date().toISOString(),
@@ -61,13 +64,14 @@ const CheckoutPage = () => {
       clearCart();
       navigate(`/order/${orderId}`, { 
         state: { 
-          orderSuccess: true,
+          success: true,
+          order: order, // Envía toda la orden para mostrar detalles
           orderId 
         } 
       });
     } catch (error) {
       console.error("Error creating order:", error);
-      alert("Ocurrió un error al procesar tu orden");
+      alert("Ocurrió un error al procesar tu orden. Por favor, inténtalo nuevamente.");
     } finally {
       setIsSubmitting(false);
     }
@@ -77,7 +81,12 @@ const CheckoutPage = () => {
     return (
       <div className="empty-cart">
         <h2>Tu carrito está vacío</h2>
-        <button onClick={() => navigate('/')}>Volver a la tienda</button>
+        <button 
+          onClick={() => navigate('/')}
+          className="btn-primary"
+        >
+          Volver a la tienda
+        </button>
       </div>
     );
   }
@@ -86,14 +95,20 @@ const CheckoutPage = () => {
     <div className="checkout-container">
       <div className="order-summary">
         <h3>Resumen de tu orden</h3>
-        {cart.map(item => (
-          <div key={item.id} className="order-item">
-            <span>{item.title} x {item.quantity}</span>
-            <span>${(item.price * item.quantity).toFixed(2)}</span>
-          </div>
-        ))}
+        <div className="order-items">
+          {cart.map(item => (
+            <div key={item.id} className="order-item">
+              <img src={item.image} alt={item.title} width="60" />
+              <div>
+                <p>{item.title}</p>
+                <span>{item.quantity} x ${item.price.toFixed(2)}</span>
+              </div>
+              <strong>${(item.price * item.quantity).toFixed(2)}</strong>
+            </div>
+          ))}
+        </div>
         <div className="order-total">
-          <strong>Total:</strong>
+          <span>Total:</span>
           <strong>${totalPrice.toFixed(2)}</strong>
         </div>
       </div>
@@ -108,18 +123,74 @@ const CheckoutPage = () => {
             value={formData.name}
             onChange={(e) => setFormData({...formData, name: e.target.value})}
             className={errors.name ? 'error' : ''}
+            placeholder="Ej: Juan"
           />
           {errors.name && <span className="error-message">{errors.name}</span>}
         </div>
 
-        {/* Repetir para lastName, phone, email y emailConfirmation */}
+        <div className="form-group">
+          <label>Apellido*</label>
+          <input
+            type="text"
+            value={formData.lastName}
+            onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+            className={errors.lastName ? 'error' : ''}
+            placeholder="Ej: Pérez"
+          />
+          {errors.lastName && <span className="error-message">{errors.lastName}</span>}
+        </div>
+
+        <div className="form-group">
+          <label>Teléfono*</label>
+          <input
+            type="tel"
+            value={formData.phone}
+            onChange={(e) => setFormData({...formData, phone: e.target.value})}
+            className={errors.phone ? 'error' : ''}
+            placeholder="Ej: 1122334455"
+          />
+          {errors.phone && <span className="error-message">{errors.phone}</span>}
+        </div>
+
+        <div className="form-group">
+          <label>Email*</label>
+          <input
+            type="email"
+            value={formData.email}
+            onChange={(e) => setFormData({...formData, email: e.target.value})}
+            className={errors.email ? 'error' : ''}
+            placeholder="Ej: email@ejemplo.com"
+          />
+          {errors.email && <span className="error-message">{errors.email}</span>}
+        </div>
+
+        <div className="form-group">
+          <label>Confirmar Email*</label>
+          <input
+            type="email"
+            value={formData.emailConfirmation}
+            onChange={(e) => setFormData({...formData, emailConfirmation: e.target.value})}
+            className={errors.emailConfirmation ? 'error' : ''}
+            placeholder="Repite tu email"
+          />
+          {errors.emailConfirmation && (
+            <span className="error-message">{errors.emailConfirmation}</span>
+          )}
+        </div>
 
         <button 
           type="submit" 
           disabled={isSubmitting}
-          className="submit-btn"
+          className={`submit-btn ${isSubmitting ? 'loading' : ''}`}
         >
-          {isSubmitting ? 'Procesando...' : 'Confirmar compra'}
+          {isSubmitting ? (
+            <>
+              <span className="spinner"></span>
+              Procesando...
+            </>
+          ) : (
+            'Confirmar compra'
+          )}
         </button>
       </form>
     </div>
