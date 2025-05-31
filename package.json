@@ -1,26 +1,21 @@
 {
-  "name": "primera-entrega",
+  "name": "ecommerce-apple-store",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "homepage": "https://tomas99843.github.io/REACTJS-Primera-entrega/",
   "dependencies": {
     "@babel/runtime": "^7.24.6",
-    "@emotion/react": "^11.11.4",
-    "@emotion/styled": "^11.11.0",
-    "@mui/icons-material": "^5.15.15",
-    "bootstrap": "^5.3.2",
+    "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
-    "firebase": "^11.8.1",
+    "firebase": "^10.14.1",
     "react": "^18.2.0",
-    "react-bootstrap": "^2.9.2",
+    "react-bootstrap": "^2.10.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.23.1",
     "sweetalert2": "^11.11.0"
   },
   "devDependencies": {
-    "@babel/plugin-transform-react-jsx": "^7.24.1",
-    "@eslint/js": "^9.2.0",
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.21",
     "@vitejs/plugin-react": "^4.2.1",
@@ -28,15 +23,14 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "gh-pages": "^6.1.1",
-    "globals": "^15.15.0",
     "vite": "^5.2.12"
   },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint . --ext .js,.jsx",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist -b gh-pages"
+    "deploy": "gh-pages -d dist -b gh-pages",
+    "lint": "eslint . --ext .js,.jsx --fix"
   }
 }

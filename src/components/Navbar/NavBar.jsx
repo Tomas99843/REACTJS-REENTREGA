@@ -24,7 +24,6 @@ const NavBar = () => {
       } catch (error) {
         console.error("Error loading categories:", error);
         setCategoriesError("Error al cargar categorías");
-        // Mostrar categorías por defecto si falla la carga
         setCategories(Object.keys(CATEGORIES).map(id => ({
           id,
           name: id.charAt(0).toUpperCase() + id.slice(1),
@@ -37,7 +36,7 @@ const NavBar = () => {
     loadCategories();
   }, []);
 
-  // Búsqueda predictiva con debounce
+  // Búsqueda predictiva optimizada
   useEffect(() => {
     const delayDebounce = setTimeout(async () => {
       if (searchTerm.trim().length > 1) {
@@ -75,96 +74,88 @@ const NavBar = () => {
   }, [navigate]);
 
   return (
-    <Navbar expand="lg" className="navbar-dark bg-dark sticky-top">
-      <Container fluid>
-        {/* Logo */}
-        <Navbar.Brand as={Link} to="/">
+    <Navbar expand="lg" className="custom-navbar" expanded={true}>
+      <Container fluid className="px-4">
+        <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
           <img
             src="/images/appleLogo.webp"
             alt="Apple Logo"
-            width="30"
-            height="30"
-            className="d-inline-block align-top"
+            width="40"
+            height="40"
+            className="d-inline-block align-top me-2"
             loading="lazy"
           />
+          <span className="brand-text">Apple Store</span>
         </Navbar.Brand>
 
-        <Navbar.Toggle aria-controls="main-navbar" />
+        <Navbar.Toggle aria-controls="main-navbar" className="d-lg-none" />
         
-        <Navbar.Collapse id="main-navbar">
-          {/* Menú de categorías */}
-          <Nav className="me-auto">
+        <Navbar.Collapse id="main-navbar" className="justify-content-between">
+          <Nav className="mx-auto">
             {categoriesLoading ? (
               <Spinner animation="border" size="sm" variant="light" />
             ) : categoriesError ? (
               <span className="text-warning">{categoriesError}</span>
             ) : (
               categories.map((category) => (
-                <Nav.Item key={category.id}>
+                <Nav.Item key={category.id} className="mx-2">
                   <NavLink 
                     to={`/category/${category.id}`}
                     className={({ isActive }) => 
-                      `nav-link ${isActive ? "active fw-bold" : ""}`
+                      `nav-link px-3 ${isActive ? "active fw-bold" : ""}`
                     }
                   >
-                    {category.name} {category.count > 0 && `(${category.count})`}
+                    {category.name}
                   </NavLink>
                 </Nav.Item>
               ))
             )}
           </Nav>
 
-          {/* Barra de búsqueda */}
-          <Form onSubmit={handleSearch} className="search-form position-relative">
-            <InputGroup>
-              <Form.Control
-                type="search"
-                placeholder="Buscar productos..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                disabled={isSearching}
-                aria-label="Buscar productos"
-              />
-              <Button 
-                type="submit" 
-                variant="outline-light"
-                disabled={isSearching || !searchTerm.trim()}
-                aria-label="Buscar"
-              >
-                {isSearching ? (
-                  <>
-                    <Spinner animation="border" size="sm" /> Buscando...
-                  </>
-                ) : 'Buscar'}
-              </Button>
-            </InputGroup>
+          <div className="d-flex align-items-center">
+            <Form onSubmit={handleSearch} className="search-form me-3">
+              <InputGroup>
+                <Form.Control
+                  type="search"
+                  placeholder="Buscar productos..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  disabled={isSearching}
+                  aria-label="Buscar productos"
+                  className="search-input"
+                />
+                <Button 
+                  type="submit" 
+                  variant="outline-light"
+                  disabled={isSearching || !searchTerm.trim()}
+                  aria-label="Buscar"
+                >
+                  {isSearching ? <Spinner animation="border" size="sm" /> : 'Buscar'}
+                </Button>
+              </InputGroup>
 
-            {/* Sugerencias de búsqueda */}
-            {suggestions.length > 0 && (
-              <div className="search-suggestions shadow">
-                {suggestions.map(item => (
-                  <div 
-                    key={item.id}
-                    className="suggestion-item"
-                    onClick={() => handleSuggestionClick(item.id)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSuggestionClick(item.id)}
-                  >
-                    <span className="suggestion-title">{item.title}</span>
-                    <span className="suggestion-price">${item.price.toFixed(2)}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Form>
+              {suggestions.length > 0 && (
+                <div className="search-suggestions shadow">
+                  {suggestions.map(item => (
+                    <div 
+                      key={item.id}
+                      className="suggestion-item"
+                      onClick={() => handleSuggestionClick(item.id)}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <span className="suggestion-title">{item.title}</span>
+                      <span className="suggestion-price">${item.price.toFixed(2)}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Form>
 
-          {/* Carrito */}
-          <Nav>
-            <Nav.Link as={Link} to="/cart" aria-label="Carrito de compras">
+            <Nav.Link as={Link} to="/cart" className="cart-link">
               <CartWidget />
             </Nav.Link>
-          </Nav>
+          </div>
         </Navbar.Collapse>
       </Container>
     </Navbar>
