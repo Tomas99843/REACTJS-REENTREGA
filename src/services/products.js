@@ -18,9 +18,15 @@ const getCategoryName = (categoryId) => {
 
 export const getProducts = async () => {
   try {
-    const productsRef = collection(db, "products"); // Uso correcto de collection con db
+    const productsRef = collection(db, "products");
     const querySnapshot = await getDocs(productsRef);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return querySnapshot.docs.map(doc => ({ 
+      id: doc.id, 
+      ...doc.data(),
+      title: doc.data().title || 'Sin título',
+      price: doc.data().price || 0,
+      category: doc.data().category || CATEGORIES.SMARTPHONES
+    }));
   } catch (error) {
     console.error("Error fetching products:", error);
     throw new Error("Error al cargar los productos");
@@ -36,7 +42,12 @@ export const getProductById = async (id) => {
       throw new Error(`Producto con ID ${id} no encontrado`);
     }
     
-    return { id: docSnap.id, ...docSnap.data() };
+    return { 
+      id: docSnap.id, 
+      ...docSnap.data(),
+      title: docSnap.data().title || 'Sin título',
+      price: docSnap.data().price || 0
+    };
   } catch (error) {
     console.error("Error fetching product:", error);
     throw error;
@@ -56,18 +67,23 @@ export const getProductsByCategory = async (categoryId) => {
     );
     
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return querySnapshot.docs.map(doc => ({ 
+      id: doc.id, 
+      ...doc.data(),
+      title: doc.data().title || 'Sin título',
+      price: doc.data().price || 0
+    }));
   } catch (error) {
     console.error("Error fetching products by category:", error);
     throw error;
   }
 };
 
-export const searchProducts = async (query) => {
+export const searchProducts = async (searchQuery) => {
   try {
     const allProducts = await getProducts();
     return allProducts.filter(product => 
-      product.title.toLowerCase().includes(query.toLowerCase())
+      product.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
   } catch (error) {
     console.error("Error searching products:", error);
