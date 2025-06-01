@@ -16,11 +16,12 @@ function App() {
         <main className="main-content">
           <Routes>
             <Route path="/" element={<CategoryPage />} />
-            <Route path="/category/:categoryId" element={<CategoryPage />} />
+            <Route path="/category/:categoryId?" element={<CategoryPage />} />
             <Route path="/item/:itemId" element={<ItemDetailPage />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/search" element={<SearchPage />} />
+            <Route path="*" element={<h1 className="text-center mt-5">404 - Página no encontrada</h1>} />
           </Routes>
         </main>
       </div>

@@ -7,7 +7,7 @@ export const CATEGORIES = {
   SMARTWATCHES: 'smartwatches'
 };
 
-const getCategoryName = (categoryId) => {
+export const getCategoryName = (categoryId) => {
   const categoryNames = {
     [CATEGORIES.SMARTPHONES]: 'iPhone',
     [CATEGORIES.LAPTOPS]: 'Mac',
@@ -25,12 +25,17 @@ export const getProducts = async () => {
       ...doc.data(),
       title: doc.data().title || 'Sin título',
       price: doc.data().price || 0,
-      category: doc.data().category || CATEGORIES.SMARTPHONES
+      category: doc.data().category || CATEGORIES.SMARTPHONES,
+      stock: doc.data().stock || 0
     }));
   } catch (error) {
     console.error("Error fetching products:", error);
     throw new Error("Error al cargar los productos");
   }
+};
+
+export const getAllProducts = async () => {
+  return await getProducts();
 };
 
 export const getProductById = async (id) => {
@@ -46,7 +51,8 @@ export const getProductById = async (id) => {
       id: docSnap.id, 
       ...docSnap.data(),
       title: docSnap.data().title || 'Sin título',
-      price: docSnap.data().price || 0
+      price: docSnap.data().price || 0,
+      stock: docSnap.data().stock || 0
     };
   } catch (error) {
     console.error("Error fetching product:", error);
@@ -71,7 +77,8 @@ export const getProductsByCategory = async (categoryId) => {
       id: doc.id, 
       ...doc.data(),
       title: doc.data().title || 'Sin título',
-      price: doc.data().price || 0
+      price: doc.data().price || 0,
+      stock: doc.data().stock || 0
     }));
   } catch (error) {
     console.error("Error fetching products by category:", error);
