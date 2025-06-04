@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, enableIndexedDbPersistence } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -11,8 +11,13 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-// Inicializa Firebase
+// Inicialización
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+// Habilita caché offline (opcional pero útil)
+enableIndexedDbPersistence(db).catch((err) => {
+  console.log("Error de persistencia: ", err.code);
+});
 
 export { db };

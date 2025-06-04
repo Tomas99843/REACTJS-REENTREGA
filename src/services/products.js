@@ -9,11 +9,11 @@ export const CATEGORIES = {
 
 export const getCategoryName = (categoryId) => {
   const categoryNames = {
-    [CATEGORIES.SMARTPHONES]: 'iPhone',
-    [CATEGORIES.LAPTOPS]: 'Mac',
-    [CATEGORIES.SMARTWATCHES]: 'Watch'
+    iphones: 'iPhone',       // Usa los valores reales de la DB
+    macbooks: 'Mac',
+    smartwatches: 'Watch'
   };
-  return categoryNames[categoryId] || categoryId;
+  return categoryNames[categoryId] || categoryId; // Si no hay match, muestra el ID crudo
 };
 
 export const getProducts = async () => {

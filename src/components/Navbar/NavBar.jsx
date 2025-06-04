@@ -7,7 +7,7 @@ import { useCart } from '../../context/CartContext';
 import './NavBar.css';
 
 const NavBar = () => {
-  const { cart } = useCart();
+  const { cart, clearCart } = useCart();
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -16,6 +16,12 @@ const NavBar = () => {
   const navigate = useNavigate();
 
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
+
+  const handleLogoClick = () => {
+    clearCart(); // Limpia el carrito
+    setSearchTerm(''); // Limpia la búsqueda
+    setSuggestions([]); // Limpia sugerencias
+  };
 
   const loadCategories = useCallback(async () => {
     try {
@@ -68,7 +74,12 @@ const NavBar = () => {
   return (
     <Navbar bg="dark" variant="dark" expand="lg" sticky="top">
       <Container fluid>
-        <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
+        <Navbar.Brand 
+          as={Link} 
+          to="/" 
+          onClick={handleLogoClick} 
+          className="d-flex align-items-center"
+        >
           <img
             src="/images/appleLogo.webp"
             alt="Apple Logo"
@@ -86,19 +97,16 @@ const NavBar = () => {
             {categoriesLoading ? (
               <Spinner animation="border" size="sm" variant="light" />
             ) : (
-              categories.map((category) => {
-                const displayName = getCategoryName(category.id);
-                return (
-                  <Nav.Link 
-                    key={category.id} 
-                    as={NavLink} 
-                    to={`/category/${category.id}`}
-                    className="mx-2"
-                  >
-                    {displayName}
-                  </Nav.Link>
-                );
-              })
+              categories.map((category) => (
+                <Nav.Link 
+                  key={category.id} 
+                  as={NavLink} 
+                  to={`/category/${category.id}`}
+                  className="mx-2"
+                >
+                  {category.name} {/* Usa el name ya formateado */}
+                </Nav.Link>
+              ))
             )}
           </Nav>
 
