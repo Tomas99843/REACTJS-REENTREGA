@@ -1,23 +1,15 @@
-/* Estructura principal - Mantenido con mejoras */
+/* Estructura principal */
 .navbar-dark {
   background-color: #000 !important;
   padding: 0.5rem 2rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  animation: fadeIn 0.3s ease-out;
 }
 
-/* Logo Apple - Actualizado */
-.navbar-brand img {
-  height: 30px; /* Ajustado a tu nuevo tamaño */
-  width: auto;
-  transition: transform 0.3s ease;
-}
-
-/* Sistema de búsqueda - Reestructurado */
+/* Sistema de búsqueda compacto */
 .search-form {
-  width: 300px;
-  margin: 0 1.5rem;
   position: relative;
+  width: 280px;
+  margin: 0 1.5rem;
 }
 
 .search-form .form-control {
@@ -25,112 +17,76 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 18px;
   color: #fff;
-  padding: 8px 20px;
-  transition: all 0.3s ease;
+  padding: 8px 15px;
+  font-size: 0.9rem;
 }
 
-.search-form .form-control::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-  font-weight: 300;
-}
-
-.search-form .form-control:focus {
-  background: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
-}
-
-/* Dropdown de Sugerencias - Mejorado */
+/* Dropdown Compacto */
 .search-suggestions {
   position: absolute;
+  top: 100%;
+  left: 0;
   width: 100%;
-  background: #1d1d1f;
-  border-radius: 0 0 18px 18px;
-  z-index: 1000;
-  max-height: 400px;
+  max-height: 250px;
   overflow-y: auto;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  border: 1px solid #333;
+  background: #fff;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
   border-top: none;
+  z-index: 1050;
+  padding: 5px 0;
+  margin-top: -1px;
+  animation: fadeIn 0.2s ease-out;
 }
 
-.search-suggestions .dropdown-item {
-  padding: 12px 20px;
-  color: #f5f5f7;
-  cursor: pointer;
-  border-bottom: 1px solid #333;
-  transition: all 0.2s ease;
-}
-
-.search-suggestions .dropdown-item:hover {
-  background: #2c2c2e;
-}
-
-/* Items de Navegación - Actualizado */
-.navbar-nav .nav-link {
-  color: #f5f5f7 !important;
-  font-size: 0.85rem;
-  padding: 8px 16px !important;
-  margin: 0 4px;
-  transition: all 0.3s ease;
-  border-radius: 18px;
-}
-
-.navbar-nav .nav-link:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.navbar-nav .nav-link.active {
-  background: rgba(255, 255, 255, 0.08);
-  font-weight: 500;
-}
-
-/* Menú secundario - Nuevo */
-.secondary-nav .nav-link {
-  padding: 8px 12px !important;
-  border-radius: 50%;
-  margin: 0 2px;
+.suggestion-item {
+  padding: 8px 15px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-bottom: 1px solid #f5f5f7;
 }
 
-.secondary-nav .bi {
-  font-size: 1.1rem;
-  transition: all 0.3s ease;
+.suggestion-item:last-child {
+  border-bottom: none;
 }
 
-.secondary-nav .nav-link:hover .bi {
-  transform: scale(1.1);
+.suggestion-item:hover {
+  background: #f5f5f7;
 }
 
-/* Carrito - Actualizado */
-.cart-link {
-  position: relative;
+.suggestion-item .product-title {
+  font-size: 0.85rem;
+  color: #1d1d1f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
 }
 
-/* Responsive Design - Revisado */
+.suggestion-item .product-price {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #0066cc;
+}
+
+/* Responsive */
 @media (max-width: 992px) {
-  .navbar {
-    padding: 0.5rem 1rem;
-  }
-  
   .search-form {
-    margin: 12px 0;
     width: 100%;
-    order: 3;
+    margin: 10px 0;
   }
   
-  .navbar-nav .nav-link {
-    padding: 10px 16px !important;
-    margin: 2px 0;
-  }
-  
-  .secondary-nav {
-    margin-left: auto;
+  .search-suggestions {
+    width: calc(100% - 30px);
+    left: 15px;
   }
 }
 
-/* Animación - Mantenido */
 @keyframes fadeIn {
-  from { opacity: 0.9; transform: translateY(-5px); }
+  from { opacity: 0; transform: translateY(-5px); }
   to { opacity: 1; transform: translateY(0); }
 }
