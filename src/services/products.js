@@ -7,100 +7,40 @@ export const CATEGORIES = {
   SMARTWATCHES: 'smartwatches'
 };
 
+// Función para obtener nombres de categorías formateados
 export const getCategoryName = (categoryId) => {
   const categoryNames = {
-    iphones: 'iPhone',       // Usa los valores reales de la DB
+    iphones: 'iPhone',
     macbooks: 'Mac',
     smartwatches: 'Watch'
   };
-  return categoryNames[categoryId] || categoryId; // Si no hay match, muestra el ID crudo
+  return categoryNames[categoryId] || categoryId;
 };
 
-export const getProducts = async () => {
+// Función para validar estructura de productos
+const validateProductData = (productData) => {
+  return {
+    id: productData.id,
+    title: productData.title || 'Sin título',
+    price: productData.price || 0,
+    category: productData.category || CATEGORIES.SMARTPHONES,
+    stock: productData.stock || 0,
+    imageUrl: productData.imageUrl || '/images/placeholder-product.png',
+    description: productData.description || '',
+    keywords: productData.keywords || []
+  };
+};
+
+// Obtener todas las categorías formateadas
+export const getFormattedCategories = async () => {
   try {
     const productsRef = collection(db, "products");
     const querySnapshot = await getDocs(productsRef);
-    return querySnapshot.docs.map(doc => ({ 
-      id: doc.id, 
-      ...doc.data(),
-      title: doc.data().title || 'Sin título',
-      price: doc.data().price || 0,
-      category: doc.data().category || CATEGORIES.SMARTPHONES,
-      stock: doc.data().stock || 0
+    const products = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
     }));
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    throw new Error("Error al cargar los productos");
-  }
-};
 
-export const getAllProducts = async () => {
-  return await getProducts();
-};
-
-export const getProductById = async (id) => {
-  try {
-    const docRef = doc(db, "products", id);
-    const docSnap = await getDoc(docRef);
-    
-    if (!docSnap.exists()) {
-      throw new Error(`Producto con ID ${id} no encontrado`);
-    }
-    
-    return { 
-      id: docSnap.id, 
-      ...docSnap.data(),
-      title: docSnap.data().title || 'Sin título',
-      price: docSnap.data().price || 0,
-      stock: docSnap.data().stock || 0
-    };
-  } catch (error) {
-    console.error("Error fetching product:", error);
-    throw error;
-  }
-};
-
-export const getProductsByCategory = async (categoryId) => {
-  try {
-    const validCategories = Object.values(CATEGORIES);
-    if (!validCategories.includes(categoryId)) {
-      throw new Error(`Categoría ${categoryId} no válida`);
-    }
-
-    const q = query(
-      collection(db, "products"),
-      where("category", "==", categoryId)
-    );
-    
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ 
-      id: doc.id, 
-      ...doc.data(),
-      title: doc.data().title || 'Sin título',
-      price: doc.data().price || 0,
-      stock: doc.data().stock || 0
-    }));
-  } catch (error) {
-    console.error("Error fetching products by category:", error);
-    throw error;
-  }
-};
-
-export const searchProducts = async (searchQuery) => {
-  try {
-    const allProducts = await getProducts();
-    return allProducts.filter(product => 
-      product.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  } catch (error) {
-    console.error("Error searching products:", error);
-    throw error;
-  }
-};
-
-export const getFormattedCategories = async () => {
-  try {
-    const products = await getProducts();
     const uniqueCategories = [...new Set(products.map(p => p.category))];
     
     return uniqueCategories.map(cat => ({
@@ -110,10 +50,62 @@ export const getFormattedCategories = async () => {
     }));
   } catch (error) {
     console.error("Error fetching categories:", error);
-    return Object.entries(CATEGORIES).map(([key, id]) => ({
+    return Object.values(CATEGORIES).map(id => ({
       id,
       name: getCategoryName(id),
       count: 0
     }));
+  }
+};
+
+// Obtener todos los productos
+export const getProducts = async () => {
+  try {
+    const productsRef = collection(db, "products");
+    const querySnapshot = await getDocs(productsRef);
+    return querySnapshot.docs.map(doc => 
+      validateProductData({ id: doc.id, ...doc.data() })
+    );
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    throw error;
+  }
+};
+
+// Obtener producto por ID
+export const getProductById = async (id) => {
+  try {
+    const docRef = doc(db, "products", id);
+    const docSnap = await getDoc(docRef);
+    
+    if (!docSnap.exists()) {
+      throw new Error('Producto no encontrado');
+    }
+    
+    return validateProductData({ id: docSnap.id, ...docSnap.data() });
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    throw error;
+  }
+};
+
+// Búsqueda de productos
+export const searchProducts = async (searchQuery) => {
+  try {
+    const productsRef = collection(db, "products");
+    const q = query(
+      productsRef,
+      where("keywords", "array-contains", searchQuery.toLowerCase())
+    );
+    
+    const querySnapshot = await getDocs(q);
+    const results = querySnapshot.docs.map(doc => 
+      validateProductData({ id: doc.id, ...doc.data() })
+    );
+
+    return results.length > 0 ? results : await getProducts(); // Fallback
+  } catch (error) {
+    console.error("Error searching products:", error);
+    return await getProducts(); // Fallback completo
   }
 };
