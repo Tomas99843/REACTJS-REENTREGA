@@ -53,7 +53,7 @@ const CheckoutPage = () => {
           title: item.title,
           price: item.price,
           quantity: item.quantity,
-          image: item.image // Asegúrate de incluir la imagen para el resumen
+          image: item.image 
         })),
         total: totalPrice,
         date: new Date().toISOString(),

@@ -4,7 +4,7 @@ import App from './App';
 import { CartProvider } from './context/CartContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import './styles/index.css'; // Asegúrate de tener este archivo
+import './styles/index.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 

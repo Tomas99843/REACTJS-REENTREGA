@@ -15,11 +15,11 @@ const ItemDetailPage = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        // Si viene de búsqueda, usa los datos del estado
+       
         if (location.state?.fromSearch && location.state?.productData) {
           setProductData(location.state.productData);
         } else {
-          // Si no, busca en Firestore
+          
           const product = await getProductById(itemId);
           setProductData(product);
         }

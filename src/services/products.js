@@ -7,7 +7,6 @@ export const CATEGORIES = {
   SMARTWATCHES: 'smartwatches'
 };
 
-// Función para obtener nombres de categorías formateados
 export const getCategoryName = (categoryId) => {
   const categoryNames = {
     iphones: 'iPhone',
@@ -17,7 +16,6 @@ export const getCategoryName = (categoryId) => {
   return categoryNames[categoryId] || categoryId;
 };
 
-// Función para validar estructura de productos
 const validateProductData = (productData) => {
   return {
     id: productData.id,
@@ -31,7 +29,56 @@ const validateProductData = (productData) => {
   };
 };
 
-// Obtener todas las categorías formateadas
+export const getProductsByCategory = async (categoryId) => {
+  try {
+    const productsRef = collection(db, "products");
+    const q = query(productsRef, where("category", "==", categoryId));
+    const querySnapshot = await getDocs(q);
+    
+    return querySnapshot.docs.map(doc => 
+      validateProductData({ id: doc.id, ...doc.data() })
+    );
+  } catch (error) {
+    console.error("Error fetching products by category:", error);
+    throw error;
+  }
+};
+
+export const searchProducts = async (searchQuery) => {
+  try {
+    const searchTerm = searchQuery.toLowerCase().trim();
+    
+    const keywordsQuery = query(
+      collection(db, "products"),
+      where("keywords", "array-contains", searchTerm)
+    );
+    const keywordsSnapshot = await getDocs(keywordsQuery);
+    const keywordsResults = keywordsSnapshot.docs.map(doc => 
+      validateProductData({ id: doc.id, ...doc.data() })
+    );
+
+    const titleQuery = query(
+      collection(db, "products"),
+      where("title", ">=", searchTerm),
+      where("title", "<=", searchTerm + "\uf8ff")
+    );
+    const titleSnapshot = await getDocs(titleQuery);
+    const titleResults = titleSnapshot.docs.map(doc => 
+      validateProductData({ id: doc.id, ...doc.data() })
+    );
+
+    const combinedResults = [...keywordsResults, ...titleResults];
+    const uniqueResults = combinedResults.filter(
+      (product, index, self) => index === self.findIndex(p => p.id === product.id)
+    );
+
+    return uniqueResults;
+  } catch (error) {
+    console.error("Error searching products:", error);
+    return [];
+  }
+};
+
 export const getFormattedCategories = async () => {
   try {
     const productsRef = collection(db, "products");
@@ -58,7 +105,6 @@ export const getFormattedCategories = async () => {
   }
 };
 
-// Obtener todos los productos
 export const getProducts = async () => {
   try {
     const productsRef = collection(db, "products");
@@ -72,7 +118,6 @@ export const getProducts = async () => {
   }
 };
 
-// Obtener producto por ID
 export const getProductById = async (id) => {
   try {
     const docRef = doc(db, "products", id);
@@ -86,26 +131,5 @@ export const getProductById = async (id) => {
   } catch (error) {
     console.error("Error fetching product:", error);
     throw error;
-  }
-};
-
-// Búsqueda de productos
-export const searchProducts = async (searchQuery) => {
-  try {
-    const productsRef = collection(db, "products");
-    const q = query(
-      productsRef,
-      where("keywords", "array-contains", searchQuery.toLowerCase())
-    );
-    
-    const querySnapshot = await getDocs(q);
-    const results = querySnapshot.docs.map(doc => 
-      validateProductData({ id: doc.id, ...doc.data() })
-    );
-
-    return results.length > 0 ? results : await getProducts(); // Fallback
-  } catch (error) {
-    console.error("Error searching products:", error);
-    return await getProducts(); // Fallback completo
   }
 };

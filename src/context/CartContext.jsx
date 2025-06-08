@@ -1,24 +1,16 @@
-// src/context/CartContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
-
 const CartContext = createContext();
-
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
-
-  // Cargar carrito desde localStorage al iniciar
   useEffect(() => {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
       setCart(JSON.parse(savedCart));
     }
   }, []);
-
-  // Guardar carrito en localStorage cuando cambie
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
-
   const addToCart = (product, quantity = 1) => {
     setCart(prevCart => {
       const existingItem = prevCart.find(item => item.id === product.id);

@@ -4,7 +4,6 @@ import "./CartWidget.css";
 
 const CartWidget = () => {
   const { totalItems } = useCart();
-
   return (
     <div className="cart-widget">
       <i className="bi bi-cart"></i> 
@@ -12,5 +11,4 @@ const CartWidget = () => {
     </div>
   );
 };
-
 export default CartWidget;

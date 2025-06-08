@@ -1,45 +1,46 @@
-/* Estilos generales */
 .navbar-dark {
   background-color: #000 !important;
   padding: 0.8rem 1rem;
 }
-
+.navbar-main {
+  min-height: 60px;
+  transition: none !important;
+}
 .navbar-brand {
   display: flex;
   align-items: center;
   font-weight: 600;
   font-size: 1.2rem;
 }
-
-/* Barra de búsqueda */
-.search-box {
+.search-container {
   position: relative;
-  width: 400px;
   margin: 0 1.5rem;
 }
-
+.search-box {
+  width: 400px;
+}
 .search-box .form-control {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgb(255, 255, 255);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 20px;
   color: white;
   padding: 8px 20px;
   height: 40px;
 }
-
-/* Resultados de búsqueda */
-.search-results {
+.search-suggestions-container {
   position: absolute;
-  top: 100%;
-  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+.search-suggestions {
   width: 100%;
   background: white;
-  border-radius: 0 0 10px 10px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-  z-index: 1000;
-  padding: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-height: 400px;
+  overflow-y: auto;
 }
-
 .product-result {
   display: flex;
   align-items: center;
@@ -47,43 +48,35 @@
   cursor: pointer;
   transition: background 0.2s;
 }
-
 .product-result:hover {
   background: #f8f8f8;
 }
-
 .result-image {
-  width: 60px;
-  height: 60px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
   margin-right: 15px;
   border-radius: 5px;
   background: #f5f5f5;
   padding: 5px;
 }
-
 .result-info {
   flex: 1;
 }
-
 .product-name {
   font-weight: 500;
   margin-bottom: 3px;
   color: #333;
 }
-
 .product-price {
   font-weight: 700;
   color: #d82c2c;
   font-size: 1.1rem;
 }
-
-/* Carrito */
 .cart-link {
   position: relative;
   margin-left: 1rem;
 }
-
 .cart-badge {
   position: absolute;
   top: -5px;
@@ -98,15 +91,12 @@
   align-items: center;
   justify-content: center;
 }
-
-/* Responsive */
 @media (max-width: 992px) {
-  .search-box {
+  .search-container {
     width: 100%;
     margin: 10px 0;
   }
-  
-  .search-results {
+  .search-box {
     width: 100%;
   }
 }

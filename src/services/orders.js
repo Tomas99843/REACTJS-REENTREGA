@@ -3,12 +3,12 @@ import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 export const createOrder = async (order) => {
   try {
-    // Validación de campos obligatorios
+    
     if (!order.buyer?.email || !order.items?.length) {
       throw new Error("Faltan datos esenciales: email o items");
     }
 
-    // Validación de estructura de items
+    
     const isValidItems = order.items.every(item => 
       item.id && item.title && item.price && item.quantity
     );
@@ -27,7 +27,7 @@ export const createOrder = async (order) => {
         title: item.title,
         price: Number(item.price),
         quantity: Number(item.quantity),
-        ...(item.image && { image: item.image }) // Campo opcional
+        ...(item.image && { image: item.image }) 
       })),
       total: Number(order.total),
       date: serverTimestamp(),
@@ -40,7 +40,7 @@ export const createOrder = async (order) => {
     return {
       id: docRef.id,
       ...orderData,
-      date: new Date().toISOString() // Fecha local como fallback
+      date: new Date().toISOString() 
     };
   } catch (error) {
     console.error("Error creating order:", error);

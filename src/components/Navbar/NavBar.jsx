@@ -52,7 +52,7 @@ const NavBar = () => {
   };
 
   return (
-    <Navbar bg="dark" variant="dark" expand="lg" sticky="top">
+    <Navbar bg="dark" variant="dark" expand="lg" sticky="top" className="navbar-main">
       <Container fluid>
         <Navbar.Brand as={Link} to="/">
           <img src="/images/appleLogo.webp" alt="Apple" height="30" className="me-2"/>
@@ -74,41 +74,45 @@ const NavBar = () => {
             ))}
           </Nav>
 
-          <Form className="search-box" onSubmit={handleSearchSubmit}>
-            <InputGroup>
-              <Form.Control
-                type="search"
-                placeholder="Buscar productos..."
-                value={searchTerm}
-                onChange={(e) => handleSearchChange(e.target.value)}
-              />
-              <Button variant="outline-light" type="submit">
-                Buscar
-              </Button>
-            </InputGroup>
+          <div className="search-container">
+            <Form className="search-box" onSubmit={handleSearchSubmit}>
+              <InputGroup>
+                <Form.Control
+                  type="search"
+                  placeholder="Buscar productos..."
+                  value={searchTerm}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                />
+                <Button variant="outline-light" type="submit">
+                  Buscar
+                </Button>
+              </InputGroup>
+            </Form>
 
             {suggestions.length > 0 && (
-              <div className="search-suggestions">
-                {suggestions.map(item => (
-                  <div 
-                    key={item.id} 
-                    className="product-result"
-                    onClick={() => navigate(`/item/${item.id}`)}
-                  >
-                    <img 
-                      src={item.imageUrl} 
-                      alt={item.title} 
-                      className="result-image"
-                    />
-                    <div className="result-info">
-                      <div className="product-name">{item.title}</div>
-                      <div className="product-price">${item.price}</div>
+              <div className="search-suggestions-container">
+                <div className="search-suggestions">
+                  {suggestions.map(item => (
+                    <div 
+                      key={item.id} 
+                      className="product-result"
+                      onClick={() => navigate(`/item/${item.id}`)}
+                    >
+                      <img 
+                        src={item.imageUrl} 
+                        alt={item.title} 
+                        className="result-image"
+                      />
+                      <div className="result-info">
+                        <div className="product-name">{item.title}</div>
+                        <div className="product-price">${item.price}</div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
-          </Form>
+          </div>
 
           <Nav.Link as={Link} to="/cart" className="cart-link">
             <CartWidget />

@@ -5,7 +5,6 @@ import path from 'path';
 export default defineConfig({
   plugins: [
     react({
-      // Silencia advertencias de Future Flags
       jsxRuntime: 'classic',
       babel: {
         plugins: [
@@ -15,7 +14,6 @@ export default defineConfig({
     }),
   ],
   define: {
-    // Variables globales para silenciar advertencias
     '__VUE_PROD_DEVTOOLS__': false,
     '__REACT_DEVTOOLS_GLOBAL_HOOK__': { isDisabled: true },
     'process.env': {},

@@ -1,12 +1,10 @@
-/* Counter.css */
 .counter-container {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: auto; /* Para alinear abajo en la card */
+  margin-top: auto;
   padding: 0 16px 16px;
 }
-
 .counter-controls {
   display: flex;
   align-items: center;
@@ -15,7 +13,6 @@
   border-radius: 8px;
   padding: 4px;
 }
-
 .counter-btn {
   width: 32px;
   height: 32px;
@@ -28,22 +25,18 @@
   cursor: pointer;
   transition: all 0.2s;
 }
-
 .counter-btn:hover:not(:disabled) {
   background: #e0e0e0;
 }
-
 .counter-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
-
 .counter-value {
   font-weight: 600;
   min-width: 20px;
   text-align: center;
 }
-
 .counter-add-btn {
   width: 100%;
   padding: 10px;
@@ -59,15 +52,12 @@
   justify-content: center;
   gap: 8px;
 }
-
 .counter-add-btn:hover {
   background: #0062c4;
 }
-
 .counter-add-btn:disabled {
   background: #a7a7a7;
 }
-
 .bi-cart-plus {
   font-size: 1rem;
 }
