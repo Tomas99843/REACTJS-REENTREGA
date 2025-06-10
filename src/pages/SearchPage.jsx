@@ -24,13 +24,17 @@ const SearchPage = () => {
         if (query.trim()) {
           data = await searchProducts(query);
           
-          
           if (data.length === 0) {
             const allProducts = await getProducts();
-            data = allProducts.filter(p => 
-              p.title.toLowerCase().includes(query.toLowerCase()) ||
-              p.keywords?.some(k => k.toLowerCase().includes(query.toLowerCase()))
-            );
+            data = allProducts
+              .filter(p => 
+                p.title.toLowerCase().includes(query.toLowerCase()) ||
+                (p.keywords || []).some(k => k.toLowerCase().includes(query.toLowerCase()))
+              )
+              .map(p => ({
+                ...p,
+                firestoreId: p.firestoreId // Asegurar que tenga firestoreId
+              }));
           }
         }
         

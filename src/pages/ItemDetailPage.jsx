@@ -1,52 +1,49 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import ItemDetailContainer from "../containers/ItemDetailContainer";
-import { useCart } from "@context/CartContext";
+import { useParams, useNavigate } from 'react-router-dom';
 import { getProductById } from "@services/products";
-import "./ItemDetailPage.css";
+import ItemDetailContainer from "../containers/ItemDetailContainer";
+import Loader from '@containers/Loader';
+import ErrorMessage from '@containers/ErrorMessage';
+import './ItemDetailPage.css';
 
 const ItemDetailPage = () => {
   const { itemId } = useParams();
-  const location = useLocation();
   const navigate = useNavigate();
-  const [productData, setProductData] = useState(null);
-  const { addToCart } = useCart();
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-       
-        if (location.state?.fromSearch && location.state?.productData) {
-          setProductData(location.state.productData);
-        } else {
-          
-          const product = await getProductById(itemId);
-          setProductData(product);
-        }
+        setLoading(true);
+        setError(null);
+        
+        if (!itemId) throw new Error('ID de producto inválido');  // ← Eliminada validación de length
+
+        const productData = await getProductById(itemId);
+        if (!productData) throw new Error('Producto no encontrado');
+
+        setProduct(productData);
       } catch (error) {
-        console.error("Error fetching product:", error);
+        console.error('Error al cargar producto:', error);
+        setError(error.message);
         navigate('/404', { replace: true });
+      } finally {
+        setLoading(false);
       }
     };
 
-    if (itemId) {
-      fetchProduct();
-    } else {
-      navigate('/');
-    }
-  }, [itemId, location.state, navigate]);
+    fetchProduct();
+  }, [itemId, navigate]);
 
-  if (!productData) {
-    return <div className="container py-4">Cargando producto...</div>;
-  }
+  if (loading) return <div className="loading-container"><Loader /><p>Cargando detalles...</p></div>;
+  if (error) return <ErrorMessage message={`Error: ${error}`} onRetry={() => window.location.reload()} />;
 
   return (
-    <div className="item-detail-page container py-4">
-      <ItemDetailContainer 
-        product={productData}
-        onAddToCart={addToCart}
-      />
-    </div>
+    <main className="item-detail-page">
+      {product ? <ItemDetailContainer product={product} /> : <ErrorMessage message="Producto no existe" />}
+    </main>
   );
 };
 

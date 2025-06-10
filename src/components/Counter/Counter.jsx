@@ -3,34 +3,28 @@ import Swal from 'sweetalert2';
 import './Counter.css';
 
 const Counter = ({ 
-  initial = 1, 
+  initial = 0,  // Cambiado de 1 a 0
   stock = 10, 
-  onQuantityChange,  
-  showAddButton = false 
+  onAdd,        // Eliminamos onQuantityChange (no necesario)
+  showAddButton = true  // Activado por defecto
 }) => {
   const [quantity, setQuantity] = useState(initial);
 
   const handleIncrement = () => {
-    const newQuantity = quantity + 1;
-    if (newQuantity > stock) {
+    if (quantity >= stock) {
       Swal.fire({
         title: '¡Stock máximo!',
-        text: `Solo dispones de ${stock} unidades`,
+        text: `Solo hay ${stock} unidades disponibles`,
         icon: 'warning',
-        confirmButtonColor: '#0071e3',
-        background: '#ffffff',
-        timer: 2000
+        confirmButtonColor: '#0071e3'
       });
       return;
     }
-    setQuantity(newQuantity);
-    if (onQuantityChange) onQuantityChange(newQuantity); 
+    setQuantity(quantity + 1);
   };
 
   const handleDecrement = () => {
-    const newQuantity = Math.max(1, quantity - 1);
-    setQuantity(newQuantity);
-    if (onQuantityChange) onQuantityChange(newQuantity); 
+    setQuantity(Math.max(0, quantity - 1));  // No permite valores negativos
   };
 
   return (
@@ -38,9 +32,8 @@ const Counter = ({
       <div className="counter-controls">
         <button 
           onClick={handleDecrement} 
-          disabled={quantity <= 1}
+          disabled={quantity <= 0}
           className="counter-btn"
-          aria-label="Reducir cantidad"
         >
           −
         </button>
@@ -49,20 +42,18 @@ const Counter = ({
           onClick={handleIncrement}
           disabled={quantity >= stock}
           className="counter-btn"
-          aria-label="Aumentar cantidad"
         >
           +
         </button>
       </div>
 
-     
       {showAddButton && (
         <button 
           onClick={() => onAdd(quantity)}
+          disabled={quantity === 0}
           className="counter-add-btn"
-          disabled={stock === 0}
         >
-          <i className="bi bi-cart-plus"></i> Agregar
+          Agregar ({quantity})
         </button>
       )}
     </div>

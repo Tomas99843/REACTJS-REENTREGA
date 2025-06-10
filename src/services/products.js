@@ -1,124 +1,130 @@
 import { db } from './firebase';
-import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
+import { 
+  collection, 
+  getDocs, 
+  query, 
+  where, 
+  doc, 
+  getDoc 
+} from 'firebase/firestore';
 
-export const CATEGORIES = {
+// Categorías de productos
+export const CATEGORIES = Object.freeze({
   SMARTPHONES: 'iphones',
   LAPTOPS: 'macbooks',
   SMARTWATCHES: 'smartwatches'
-};
+});
 
+// Nombres para mostrar en el NavBar
+const CATEGORY_NAMES = Object.freeze({
+  iphones: 'iPhone',
+  macbooks: 'MacBook',
+  smartwatches: 'Apple Watch'
+});
+
+// Obtener nombre legible de categoría
 export const getCategoryName = (categoryId) => {
-  const categoryNames = {
-    iphones: 'iPhone',
-    macbooks: 'Mac',
-    smartwatches: 'Watch'
-  };
-  return categoryNames[categoryId] || categoryId;
+  return CATEGORY_NAMES[categoryId] || categoryId;
 };
 
-const validateProductData = (productData) => {
+// Validación de productos (usa ID de Firestore)
+const validateProductData = (docData, firestoreId) => {
   return {
-    id: productData.id,
-    title: productData.title || 'Sin título',
-    price: productData.price || 0,
-    category: productData.category || CATEGORIES.SMARTPHONES,
-    stock: productData.stock || 0,
-    imageUrl: productData.imageUrl || '/images/placeholder-product.png',
-    description: productData.description || '',
-    keywords: productData.keywords || []
+    firestoreId: firestoreId, // ID automático de Firestore
+    title: docData.title || 'Sin título',
+    price: Number(docData.price) || 0,
+    category: Object.values(CATEGORIES).includes(docData.category) 
+      ? docData.category 
+      : CATEGORIES.SMARTPHONES,
+    imageUrl: docData.imageUrl || '/images/placeholder.png',
+    description: docData.description || '',
+    stock: Math.max(0, Number(docData.stock) || 0),
+    keywords: Array.isArray(docData.keywords) ? docData.keywords : []
   };
 };
 
-export const getProductsByCategory = async (categoryId) => {
-  try {
-    const productsRef = collection(db, "products");
-    const q = query(productsRef, where("category", "==", categoryId));
-    const querySnapshot = await getDocs(q);
-    
-    return querySnapshot.docs.map(doc => 
-      validateProductData({ id: doc.id, ...doc.data() })
-    );
-  } catch (error) {
-    console.error("Error fetching products by category:", error);
-    throw error;
-  }
-};
+// Cache de productos
+const productCache = new Map();
 
-export const searchProducts = async (searchQuery) => {
-  try {
-    const searchTerm = searchQuery.toLowerCase().trim();
-    
-    const keywordsQuery = query(
-      collection(db, "products"),
-      where("keywords", "array-contains", searchTerm)
-    );
-    const keywordsSnapshot = await getDocs(keywordsQuery);
-    const keywordsResults = keywordsSnapshot.docs.map(doc => 
-      validateProductData({ id: doc.id, ...doc.data() })
-    );
-
-    const titleQuery = query(
-      collection(db, "products"),
-      where("title", ">=", searchTerm),
-      where("title", "<=", searchTerm + "\uf8ff")
-    );
-    const titleSnapshot = await getDocs(titleQuery);
-    const titleResults = titleSnapshot.docs.map(doc => 
-      validateProductData({ id: doc.id, ...doc.data() })
-    );
-
-    const combinedResults = [...keywordsResults, ...titleResults];
-    const uniqueResults = combinedResults.filter(
-      (product, index, self) => index === self.findIndex(p => p.id === product.id)
-    );
-
-    return uniqueResults;
-  } catch (error) {
-    console.error("Error searching products:", error);
-    return [];
-  }
-};
-
+// Obtener categorías formateadas para el NavBar
 export const getFormattedCategories = async () => {
   try {
-    const productsRef = collection(db, "products");
-    const querySnapshot = await getDocs(productsRef);
-    const products = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
+    const products = await getProducts();
+    const categoryCounts = {};
+    
+    products.forEach(product => {
+      if (Object.values(CATEGORIES).includes(product.category)) {
+        categoryCounts[product.category] = (categoryCounts[product.category] || 0) + 1;
+      }
+    });
+
+    return Object.values(CATEGORIES).map(categoryId => ({
+      id: categoryId,
+      name: getCategoryName(categoryId),
+      count: categoryCounts[categoryId] || 0
     }));
 
-    const uniqueCategories = [...new Set(products.map(p => p.category))];
-    
-    return uniqueCategories.map(cat => ({
-      id: cat,
-      name: getCategoryName(cat),
-      count: products.filter(p => p.category === cat).length
-    }));
   } catch (error) {
-    console.error("Error fetching categories:", error);
-    return Object.values(CATEGORIES).map(id => ({
-      id,
-      name: getCategoryName(id),
+    console.error("Error al cargar categorías:", error);
+    return Object.values(CATEGORIES).map(categoryId => ({
+      id: categoryId,
+      name: getCategoryName(categoryId),
       count: 0
     }));
   }
 };
 
-export const getProducts = async () => {
+// Búsqueda de productos (versión mejorada)
+export const searchProducts = async (searchTerm) => {
   try {
-    const productsRef = collection(db, "products");
-    const querySnapshot = await getDocs(productsRef);
-    return querySnapshot.docs.map(doc => 
-      validateProductData({ id: doc.id, ...doc.data() })
-    );
+    const products = await getProducts();
+    const term = searchTerm.toLowerCase().trim();
+    
+    const filteredProducts = products
+      .filter(product => 
+        product.title.toLowerCase().includes(term) ||
+        (product.keywords || []).some(kw => kw.toLowerCase().includes(term))
+      )
+      .map(product => ({
+        ...product,
+        firestoreId: product.firestoreId // Garantiza que exista
+      }));
+
+    console.debug('Resultados de búsqueda:', filteredProducts);
+    return filteredProducts;
+
   } catch (error) {
-    console.error("Error fetching products:", error);
-    throw error;
+    console.error("Error en búsqueda:", error);
+    return [];
   }
 };
 
+// Obtener todos los productos
+export const getProducts = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, "products"));
+    const products = querySnapshot.docs.map(doc => 
+      validateProductData(doc.data(), doc.id)
+    );
+    console.debug('Productos cargados:', products);
+    return products;
+  } catch (error) {
+    console.error("Error al cargar productos:", error);
+    return [];
+  }
+};
+
+// Obtener producto por ID (usa ID de Firestore)
 export const getProductById = async (id) => {
+  if (!id) {
+    console.error("Se intentó buscar un producto sin ID");
+    throw new Error('ID de producto inválido');
+  }
+
+  if (productCache.has(id)) {
+    return productCache.get(id);
+  }
+
   try {
     const docRef = doc(db, "products", id);
     const docSnap = await getDoc(docRef);
@@ -126,10 +132,37 @@ export const getProductById = async (id) => {
     if (!docSnap.exists()) {
       throw new Error('Producto no encontrado');
     }
-    
-    return validateProductData({ id: docSnap.id, ...docSnap.data() });
+
+    const productData = validateProductData(docSnap.data(), docSnap.id);
+    productCache.set(id, productData);
+    return productData;
+
   } catch (error) {
-    console.error("Error fetching product:", error);
+    console.error(`Error al cargar producto ${id}:`, error);
     throw error;
   }
 };
+
+// Obtener productos por categoría
+export const getProductsByCategory = async (category) => {
+  try {
+    const q = query(
+      collection(db, "products"), 
+      where("category", "==", category)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => 
+      validateProductData(doc.data(), doc.id)
+    );
+  } catch (error) {
+    console.error(`Error al cargar productos de ${category}:`, error);
+    return [];
+  }
+};
+
+// Limpiar cache cada 5 minutos
+setInterval(() => {
+  productCache.clear();
+  console.log('Cache de productos limpiado');
+}, 300000);
