@@ -97,7 +97,7 @@
   }
 }
 
-/* Agrega esto al final de Item.css */
+
 .detail-button {
   display: block;
   width: calc(100% - 32px);
@@ -119,8 +119,8 @@
   background-color: #0062c4;
 }
 
-/* Ajuste para el contenedor del botón */
+
 .product-card {
   position: relative;
-  padding-bottom: 60px; /* Espacio para el botón */
+  padding-bottom: 60px; 
 }

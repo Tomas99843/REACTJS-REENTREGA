@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import ItemListContainer from "@containers/ItemListContainer";
-import { getCategoryName } from "@services/products"; // Importación añadida
+import { getCategoryName } from "@services/products"; 
 
 const CategoryPage = () => {
   const { categoryId } = useParams();

@@ -65,7 +65,7 @@ const CheckoutPage = () => {
       navigate(`/order/${orderId}`, { 
         state: { 
           success: true,
-          order: order, // Envía toda la orden para mostrar detalles
+          order: order, 
           orderId 
         } 
       });

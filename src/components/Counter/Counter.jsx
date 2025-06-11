@@ -3,10 +3,10 @@ import Swal from 'sweetalert2';
 import './Counter.css';
 
 const Counter = ({ 
-  initial = 0,  // Cambiado de 1 a 0
+  initial = 0, 
   stock = 10, 
-  onAdd,        // Eliminamos onQuantityChange (no necesario)
-  showAddButton = true  // Activado por defecto
+  onAdd,        
+  showAddButton = true  
 }) => {
   const [quantity, setQuantity] = useState(initial);
 
@@ -24,7 +24,7 @@ const Counter = ({
   };
 
   const handleDecrement = () => {
-    setQuantity(Math.max(0, quantity - 1));  // No permite valores negativos
+    setQuantity(Math.max(0, quantity - 1));  
   };
 
   return (

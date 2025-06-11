@@ -23,7 +23,7 @@ node_modules
 *.sln
 *.sw?
 
-# .gitignore
+
 .env
 .env.local
 node_modules/
