@@ -14,33 +14,30 @@ const SearchPage = () => {
   const navigate = useNavigate();
   const query = new URLSearchParams(location.search).get('q') || '';
 
-  
   useEffect(() => {
-    const timer = setTimeout(() => {
-      const performSearch = async () => {
-        if (!query.trim()) {
-          setResults([]);
-          setSearchTerm('');
-          return;
-        }
+    const performSearch = async () => {
+      if (!query.trim()) {
+        setResults([]);
+        setSearchTerm('');
+        return;
+      }
 
-        setLoading(true);
-        setSearchTerm(query);
-        
-        try {
-          const data = await searchProducts(query);
-          setResults(data);
-        } catch (error) {
-          console.error("Error en búsqueda:", error);
-          setResults([]);
-        } finally {
-          setLoading(false);
-        }
-      };
+      setLoading(true);
+      setSearchTerm(query);
+      
+      try {
+        const data = await searchProducts(query);
+        console.log("Resultados de búsqueda:", data); // Depuración
+        setResults(data);
+      } catch (error) {
+        console.error("Error en búsqueda:", error);
+        setResults([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      performSearch();
-    }, 300);
-
+    const timer = setTimeout(performSearch, 300);
     return () => clearTimeout(timer);
   }, [query]);
 

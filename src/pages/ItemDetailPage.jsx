@@ -14,20 +14,22 @@ const ItemDetailPage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    let isMounted = true; 
+    let isMounted = true;
 
     const fetchProduct = async () => {
       try {
-        if (!itemId) {
+        // Validación temprana del ID
+        if (!itemId || typeof itemId !== 'string') {
           throw new Error('ID de producto no válido');
         }
 
+        console.log("Cargando producto con ID:", itemId); // Depuración
         const productData = await getProductById(itemId);
         
-        if (!isMounted) return; 
+        if (!isMounted) return;
         
         if (!productData) {
-          throw new Error('No se encontró el producto solicitado');
+          throw new Error(`No se encontró el producto con ID: ${itemId}`);
         }
 
         setProduct(productData);
@@ -51,11 +53,10 @@ const ItemDetailPage = () => {
       }
     };
 
-    const timer = setTimeout(fetchProduct, 300); 
+    fetchProduct();
 
     return () => {
       isMounted = false;
-      clearTimeout(timer);
     };
   }, [itemId, navigate]);
 
@@ -71,7 +72,7 @@ const ItemDetailPage = () => {
   if (error) {
     return (
       <ErrorMessage 
-        message={`No se pudo cargar el producto (ID: ${itemId})`}
+        message={`Error: ${error}`}
         onRetry={() => window.location.reload()}
         buttonText="Intentar nuevamente"
       />

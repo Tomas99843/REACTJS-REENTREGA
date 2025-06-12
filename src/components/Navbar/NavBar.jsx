@@ -96,7 +96,10 @@ const NavBar = () => {
                     <div 
                       key={item.id} 
                       className="product-result"
-                      onClick={() => navigate(`/item/${item.id}`)}
+                      onClick={() => {
+                        console.log("Navegando a producto con ID:", item.id); // Depuración
+                        navigate(`/item/${item.id}`);
+                      }}
                     >
                       <img 
                         src={item.imageUrl} 

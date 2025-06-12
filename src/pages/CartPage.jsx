@@ -1,36 +1,51 @@
-
 import React from 'react';
 import { useCart } from "../context/CartContext";
 import { Link } from "react-router-dom";
+import Counter from "../components/Counter/Counter";
+import "./CartPage.css";
 
 const CartPage = () => {
-  const { cart, removeFromCart, totalItems } = useCart();
+  const { cart, removeFromCart, updateQuantity, totalItems, totalPrice } = useCart();
 
-
-  const totalPrice = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  // Función para calcular el stock disponible considerando lo ya en carrito
+  const getAvailableStock = (productId, currentStock) => {
+    const cartItem = cart.find(item => item.id === productId);
+    return currentStock - (cartItem?.quantity || 0);
+  };
 
   return (
     <div className="cart-page">
-      <h1>Tu Carrito ({totalItems} items)</h1>
+      <h1>Tu Carrito ({totalItems} {totalItems === 1 ? 'item' : 'items'})</h1>
+      
       {cart.length === 0 ? (
-        <div>
+        <div className="empty-cart">
           <p>El carrito está vacío</p>
-          <Link to="/" className="btn">
+          <Link to="/" className="btn btn-primary">
             Seguir comprando
           </Link>
         </div>
       ) : (
-        <div>
+        <div className="cart-container">
           <ul className="cart-items">
             {cart.map((item) => (
               <li key={item.id} className="cart-item">
-                <img src={item.image} alt={item.title} width="80" />
-                <div>
+                <img src={item.imageUrl} alt={item.title} className="cart-item-image" />
+                <div className="cart-item-details">
                   <h3>{item.title}</h3>
-                  <p>${item.price} x {item.quantity}</p>
+                  <p>Precio unitario: ${item.price.toFixed(2)}</p>
+                  <div className="item-controls">
+                    <Counter
+                      initial={item.quantity}
+                      stock={item.stock + item.quantity} // Stock total disponible
+                      onUpdate={(newQty) => {
+                        updateQuantity(item.id, newQty);
+                      }}
+                      showAddButton={false}
+                    />
+                    <p className="item-subtotal">
+                      Subtotal: ${(item.price * item.quantity).toFixed(2)}
+                    </p>
+                  </div>
                   <button 
                     onClick={() => removeFromCart(item.id)}
                     className="btn-remove"
@@ -41,9 +56,12 @@ const CartPage = () => {
               </li>
             ))}
           </ul>
+          
           <div className="cart-summary">
             <h2>Total: ${totalPrice.toFixed(2)}</h2>
-            <button className="btn-checkout">Finalizar compra</button>
+            <Link to="/checkout" className="btn-checkout">
+              Finalizar compra
+            </Link>
           </div>
         </div>
       )}

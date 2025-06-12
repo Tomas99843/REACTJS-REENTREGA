@@ -1,49 +1,74 @@
 .counter-container {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: auto;
-  padding: 0 16px 16px;
+  gap: 8px;
 }
+
 .counter-controls {
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: #f5f5f7;
-  border-radius: 8px;
-  padding: 4px;
+  border-radius: 12px;
+  padding: 6px;
+  width: 120px;
 }
+
 .counter-btn {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border: none;
   background: #ffffff;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 1.2rem;
   font-weight: 500;
   color: #0071e3;
   cursor: pointer;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
+
 .counter-btn:hover:not(:disabled) {
-  background: #e0e0e0;
+  background: #e8f1ff;
+  transform: scale(1.05);
 }
+
 .counter-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+  box-shadow: none;
 }
+
 .counter-value {
   font-weight: 600;
-  min-width: 20px;
+  min-width: 24px;
   text-align: center;
+  font-size: 0.95rem;
 }
+
+/* Estilo específico para el carrito */
+.cart-item .counter-controls {
+  background: transparent;
+  padding: 0;
+  width: auto;
+}
+
+.cart-item .counter-btn {
+  background: #f0f0f0;
+  width: 28px;
+  height: 28px;
+}
+
 .counter-add-btn {
   width: 100%;
   padding: 10px;
   background: #0071e3;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: 500;
   cursor: pointer;
   transition: background 0.2s;
@@ -51,13 +76,16 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+  margin-top: 8px;
+  font-size: 0.9rem;
 }
+
 .counter-add-btn:hover {
   background: #0062c4;
+  transform: translateY(-1px);
 }
+
 .counter-add-btn:disabled {
   background: #a7a7a7;
-}
-.bi-cart-plus {
-  font-size: 1rem;
+  transform: none;
 }

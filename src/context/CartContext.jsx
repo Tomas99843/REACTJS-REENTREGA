@@ -1,16 +1,35 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+
 const CartContext = createContext();
+
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
+
+  // Cargar carrito desde localStorage al iniciar
   useEffect(() => {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
-      setCart(JSON.parse(savedCart));
+      try {
+        const parsedCart = JSON.parse(savedCart);
+        // Validar que los items tengan quantity y price como números
+        const validatedCart = parsedCart.map(item => ({
+          ...item,
+          quantity: Number(item.quantity) || 1,
+          price: Number(item.price) || 0
+        }));
+        setCart(validatedCart);
+      } catch (error) {
+        console.error('Error al parsear carrito:', error);
+        localStorage.removeItem('cart');
+      }
     }
   }, []);
+
+  // Guardar carrito en localStorage al cambiar
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
+
   const addToCart = (product, quantity = 1) => {
     setCart(prevCart => {
       const existingItem = prevCart.find(item => item.id === product.id);
@@ -18,12 +37,23 @@ export const CartProvider = ({ children }) => {
       if (existingItem) {
         return prevCart.map(item =>
           item.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
+            ? { 
+                ...item, 
+                quantity: item.quantity + Number(quantity),
+                price: Number(item.price) // Asegurar que price sea número
+              }
             : item
         );
       }
       
-      return [...prevCart, { ...product, quantity }];
+      return [
+        ...prevCart, 
+        { 
+          ...product, 
+          quantity: Number(quantity),
+          price: Number(product.price) // Asegurar que price sea número
+        }
+      ];
     });
   };
 
@@ -32,24 +62,29 @@ export const CartProvider = ({ children }) => {
   };
 
   const updateQuantity = (productId, newQuantity) => {
-    if (newQuantity <= 0) {
-      removeFromCart(productId);
-      return;
-    }
-
-    setCart(prevCart =>
-      prevCart.map(item =>
-        item.id === productId ? { ...item, quantity: newQuantity } : item
-      )
-    );
-  };
+  setCart(prevCart => 
+    prevCart.map(item =>
+      item.id === productId 
+        ? { ...item, quantity: Math.min(newQuantity, item.stock + item.quantity) }
+        : item
+    )
+  );
+};
 
   const clearCart = () => {
     setCart([]);
   };
 
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  // Calcular totales (con validación numérica)
+const totalItems = cart.reduce(
+  (sum, item) => sum + (Number(item.quantity) || 0),
+  0
+);
+
+const totalPrice = cart.reduce(
+  (sum, item) => sum + ((Number(item.price) || 0) * (Number(item.quantity) || 0)),
+  0
+);
 
   return (
     <CartContext.Provider

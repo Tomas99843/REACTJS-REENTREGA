@@ -1,30 +1,38 @@
-import React, { useState } from 'react';
-import Swal from 'sweetalert2';
+import React, { useState, useEffect } from 'react';
 import './Counter.css';
 
 const Counter = ({ 
-  initial = 0, 
-  stock = 10, 
-  onAdd,        
-  showAddButton = true  
+  initial = 1,
+  stock = 10,
+  onAdd,
+  onUpdate,
+  showAddButton = true
 }) => {
   const [quantity, setQuantity] = useState(initial);
 
+  // Sincronización con cambios externos
+  useEffect(() => {
+    setQuantity(initial);
+  }, [initial]);
+
   const handleIncrement = () => {
-    if (quantity >= stock) {
-      Swal.fire({
-        title: '¡Stock máximo!',
-        text: `Solo hay ${stock} unidades disponibles`,
-        icon: 'warning',
-        confirmButtonColor: '#0071e3'
-      });
-      return;
+    const newQuantity = quantity + 1;
+    setQuantity(newQuantity);
+    if (showAddButton) {
+      onAdd && onAdd(newQuantity);
+    } else {
+      onUpdate && onUpdate(newQuantity);
     }
-    setQuantity(quantity + 1);
   };
 
   const handleDecrement = () => {
-    setQuantity(Math.max(0, quantity - 1));  
+    const newQuantity = Math.max(showAddButton ? 0 : 1, quantity - 1);
+    setQuantity(newQuantity);
+    if (showAddButton) {
+      onAdd && onAdd(newQuantity);
+    } else {
+      onUpdate && onUpdate(newQuantity);
+    }
   };
 
   return (
@@ -32,7 +40,7 @@ const Counter = ({
       <div className="counter-controls">
         <button 
           onClick={handleDecrement} 
-          disabled={quantity <= 0}
+          disabled={quantity <= (showAddButton ? 0 : 1)}
           className="counter-btn"
         >
           −
@@ -48,8 +56,8 @@ const Counter = ({
       </div>
 
       {showAddButton && (
-        <button 
-          onClick={() => onAdd(quantity)}
+        <button
+          onClick={() => onAdd && onAdd(quantity)}
           disabled={quantity === 0}
           className="counter-add-btn"
         >
