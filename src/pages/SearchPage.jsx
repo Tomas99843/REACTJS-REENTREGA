@@ -27,7 +27,7 @@ const SearchPage = () => {
       
       try {
         const data = await searchProducts(query);
-        console.log("Resultados de búsqueda:", data); // Depuración
+        console.log("Resultados de búsqueda:", data); 
         setResults(data);
       } catch (error) {
         console.error("Error en búsqueda:", error);

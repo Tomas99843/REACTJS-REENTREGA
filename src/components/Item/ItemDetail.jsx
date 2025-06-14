@@ -17,9 +17,7 @@ const ItemDetail = ({ product }) => {
       <h2>{product.title}</h2>
       <p className="price">${product.price?.toLocaleString?.() || 'N/A'}</p>
       <p className="description">{product.description || 'Descripción no disponible'}</p>
-      <p className="stock">
-        {product.stock ? `${product.stock} unidades disponibles` : 'Sin stock'}
-      </p>
+      
     </div>
   );
 };

@@ -21,6 +21,7 @@ function App() {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/search" element={<SearchPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="*" element={<h1 className="text-center mt-5">404 - Página no encontrada</h1>} />
           </Routes>
         </main>

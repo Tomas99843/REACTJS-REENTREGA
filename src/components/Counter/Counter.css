@@ -3,7 +3,6 @@
   flex-direction: column;
   gap: 8px;
 }
-
 .counter-controls {
   display: flex;
   align-items: center;
@@ -13,7 +12,6 @@
   padding: 6px;
   width: 120px;
 }
-
 .counter-btn {
   width: 34px;
   height: 34px;
@@ -30,38 +28,31 @@
   justify-content: center;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
-
 .counter-btn:hover:not(:disabled) {
   background: #e8f1ff;
   transform: scale(1.05);
 }
-
 .counter-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
   box-shadow: none;
 }
-
 .counter-value {
   font-weight: 600;
   min-width: 24px;
   text-align: center;
   font-size: 0.95rem;
 }
-
-/* Estilo específico para el carrito */
 .cart-item .counter-controls {
   background: transparent;
   padding: 0;
   width: auto;
 }
-
 .cart-item .counter-btn {
   background: #f0f0f0;
   width: 28px;
   height: 28px;
 }
-
 .counter-add-btn {
   width: 100%;
   padding: 10px;
@@ -79,12 +70,10 @@
   margin-top: 8px;
   font-size: 0.9rem;
 }
-
 .counter-add-btn:hover {
   background: #0062c4;
   transform: translateY(-1px);
 }
-
 .counter-add-btn:disabled {
   background: #a7a7a7;
   transform: none;

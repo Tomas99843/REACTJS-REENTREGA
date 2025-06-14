@@ -97,7 +97,7 @@ const NavBar = () => {
                       key={item.id} 
                       className="product-result"
                       onClick={() => {
-                        console.log("Navegando a producto con ID:", item.id); // Depuración
+                        console.log("Navegando a producto con ID:", item.id); 
                         navigate(`/item/${item.id}`);
                       }}
                     >

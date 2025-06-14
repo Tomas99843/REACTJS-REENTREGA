@@ -5,17 +5,16 @@ const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
 
-  // Cargar carrito desde localStorage al iniciar
   useEffect(() => {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
       try {
         const parsedCart = JSON.parse(savedCart);
-        // Validar que los items tengan quantity y price como números
         const validatedCart = parsedCart.map(item => ({
           ...item,
           quantity: Number(item.quantity) || 1,
-          price: Number(item.price) || 0
+          price: Number(item.price) || 0,
+          stock: Number(item.stock) || 0 
         }));
         setCart(validatedCart);
       } catch (error) {
@@ -25,10 +24,15 @@ export const CartProvider = ({ children }) => {
     }
   }, []);
 
-  // Guardar carrito en localStorage al cambiar
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
+
+  
+  const getAvailableStock = (productId, productStock) => {
+    const cartItem = cart.find(item => item.id === productId);
+    return productStock - (cartItem?.quantity || 0);
+  };
 
   const addToCart = (product, quantity = 1) => {
     setCart(prevCart => {
@@ -40,7 +44,8 @@ export const CartProvider = ({ children }) => {
             ? { 
                 ...item, 
                 quantity: item.quantity + Number(quantity),
-                price: Number(item.price) // Asegurar que price sea número
+                price: Number(item.price),
+                stock: Number(item.stock) 
               }
             : item
         );
@@ -51,7 +56,8 @@ export const CartProvider = ({ children }) => {
         { 
           ...product, 
           quantity: Number(quantity),
-          price: Number(product.price) // Asegurar que price sea número
+          price: Number(product.price),
+          stock: Number(product.stock) 
         }
       ];
     });
@@ -62,29 +68,35 @@ export const CartProvider = ({ children }) => {
   };
 
   const updateQuantity = (productId, newQuantity) => {
-  setCart(prevCart => 
-    prevCart.map(item =>
-      item.id === productId 
-        ? { ...item, quantity: Math.min(newQuantity, item.stock + item.quantity) }
-        : item
-    )
-  );
-};
+    setCart(prevCart => 
+      prevCart.map(item => {
+        if (item.id === productId) {
+          const maxAllowed = item.stock; 
+          const finalQuantity = Math.min(newQuantity, maxAllowed);
+          
+          return { 
+            ...item, 
+            quantity: finalQuantity
+          };
+        }
+        return item;
+      })
+    );
+  };
 
   const clearCart = () => {
     setCart([]);
   };
 
-  // Calcular totales (con validación numérica)
-const totalItems = cart.reduce(
-  (sum, item) => sum + (Number(item.quantity) || 0),
-  0
-);
+  const totalItems = cart.reduce(
+    (sum, item) => sum + (Number(item.quantity) || 0),
+    0
+  );
 
-const totalPrice = cart.reduce(
-  (sum, item) => sum + ((Number(item.price) || 0) * (Number(item.quantity) || 0)),
-  0
-);
+  const totalPrice = cart.reduce(
+    (sum, item) => sum + ((Number(item.price) || 0) * (Number(item.quantity) || 0)),
+    0
+  );
 
   return (
     <CartContext.Provider
@@ -95,7 +107,8 @@ const totalPrice = cart.reduce(
         updateQuantity,
         clearCart,
         totalItems,
-        totalPrice
+        totalPrice,
+        getAvailableStock 
       }}
     >
       {children}

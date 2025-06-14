@@ -8,9 +8,8 @@ export const CATEGORIES = Object.freeze({
 });
 
 const productCache = new Map();
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutos de caché
+const CACHE_TTL = 5 * 60 * 1000;
 
-// Limpiar caché periódicamente
 setInterval(() => {
   productCache.clear();
 }, CACHE_TTL);
@@ -18,8 +17,8 @@ setInterval(() => {
 const normalizeProduct = (doc) => {
   const data = doc.data();
   return {
-    id: doc.id, // ID principal (de Firestore)
-    firestoreId: doc.id, // Compatibilidad con código existente
+    id: doc.id,
+    firestoreId: doc.id,
     title: data.title || 'Sin título',
     price: Number(data.price) || 0,
     category: Object.values(CATEGORIES).includes(data.category) 
@@ -32,11 +31,6 @@ const normalizeProduct = (doc) => {
   };
 };
 
-/**
- * Busca productos por término (título o keywords).
- * @param {string} searchTerm - Término de búsqueda.
- * @returns {Promise<Array>} Lista de productos filtrados.
- */
 export const searchProducts = async (searchTerm) => {
   try {
     const term = searchTerm.toLowerCase().trim();
@@ -53,15 +47,8 @@ export const searchProducts = async (searchTerm) => {
   }
 };
 
-/**
- * Obtiene todos los productos desde Firestore (con caché).
- * @returns {Promise<Array>} Lista completa de productos.
- */
 export const getProducts = async () => {
   try {
-    // Descomenta para limpiar caché durante pruebas:
-    // productCache.delete('ALL_PRODUCTS');
-
     if (productCache.has('ALL_PRODUCTS')) {
       return productCache.get('ALL_PRODUCTS');
     }
@@ -77,12 +64,6 @@ export const getProducts = async () => {
   }
 };
 
-/**
- * Obtiene un producto específico por ID desde Firestore.
- * @param {string} id - ID del producto en Firestore.
- * @returns {Promise<Object|null>} Datos del producto o null si no existe.
- * @throws {Error} Si el ID es inválido o hay un error técnico.
- */
 export const getProductById = async (id) => {
   if (!id || typeof id !== 'string') {
     console.error("ID de producto no válido:", id);
@@ -105,11 +86,6 @@ export const getProductById = async (id) => {
   }
 };
 
-/**
- * Obtiene productos filtrados por categoría.
- * @param {string} category - Categoría (ej: 'iphones').
- * @returns {Promise<Array>} Lista de productos en la categoría.
- */
 export const getProductsByCategory = async (category) => {
   try {
     const q = query(
@@ -125,10 +101,6 @@ export const getProductsByCategory = async (category) => {
   }
 };
 
-/**
- * Obtiene categorías con conteo de productos.
- * @returns {Promise<Array>} Lista de categorías formateadas.
- */
 export const getFormattedCategories = async () => {
   try {
     const products = await getProducts();
@@ -151,16 +123,11 @@ export const getFormattedCategories = async () => {
   }
 };
 
-/**
- * Traduce el ID de categoría a nombre legible.
- * @param {string} categoryId - ID de categoría (ej: 'iphones').
- * @returns {string} Nombre formateado (ej: 'iPhone').
- */
 export const getCategoryName = (categoryId) => {
   const names = {
     iphones: 'iPhone',
     macbooks: 'MacBook',
-    smartwatches: 'Apple Watch'
+    smartwatches: 'Watch'
   };
   return names[categoryId] || categoryId;
 };

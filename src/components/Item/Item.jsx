@@ -8,7 +8,7 @@ const Item = ({ product }) => {
       <img src={product.imageUrl} alt={product.title} />
       <h3>{product.title}</h3>
       <p>${product.price}</p>
-      {/*  firestoreId */}
+      
       <Link to={`/item/${product.firestoreId}`} className="detail-link">
         Ver detalle
       </Link>
