@@ -12,8 +12,17 @@
 }
 
 .main-content {
-  padding: 2rem;
+  padding: 0;
   flex-grow: 1;
+  background: white;
+}
+
+.item-list-container h2 {
+  text-align: center;
+  margin: 40px 0 20px;
+  font-size: 2rem;
+  color: var(--text-dark);
+  font-weight: 600;
 }
 
 .products-grid {

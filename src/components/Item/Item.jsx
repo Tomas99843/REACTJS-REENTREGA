@@ -5,13 +5,22 @@ import "./Item.css";
 const Item = ({ product }) => {
   return (
     <div className="item-card">
-      <img src={product.imageUrl} alt={product.title} />
-      <h3>{product.title}</h3>
-      <p>${product.price}</p>
+      <div className="item-image-container">
+        <img 
+          src={product.imageUrl} 
+          alt={product.title} 
+          className="item-image"
+        />
+      </div>
       
-      <Link to={`/item/${product.firestoreId}`} className="detail-link">
-        Ver detalle
-      </Link>
+      <div className="item-info">
+        <h3 className="item-title">{product.title}</h3>
+        <p className="item-price">${product.price}</p>
+      </div>
+      
+      <button className="detail-button">
+        Ver detalles
+      </button>
     </div>
   );
 };

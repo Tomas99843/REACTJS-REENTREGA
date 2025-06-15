@@ -97,8 +97,9 @@ const NavBar = () => {
                       key={item.id} 
                       className="product-result"
                       onClick={() => {
-                        console.log("Navegando a producto con ID:", item.id); 
                         navigate(`/item/${item.id}`);
+                        setSearchTerm(''); // Limpia el input
+                        setSuggestions([]); // Oculta el dropdown
                       }}
                     >
                       <img 
@@ -108,7 +109,7 @@ const NavBar = () => {
                       />
                       <div className="result-info">
                         <div className="product-name">{item.title}</div>
-                        <div className="product-price">${item.price}</div>
+                        <div className="product-price">{item.price}</div>
                       </div>
                     </div>
                   ))}

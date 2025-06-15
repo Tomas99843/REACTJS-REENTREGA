@@ -18,12 +18,12 @@ const ItemDetailPage = () => {
 
     const fetchProduct = async () => {
       try {
-        // Validación temprana del ID
+        
         if (!itemId || typeof itemId !== 'string') {
           throw new Error('ID de producto no válido');
         }
 
-        console.log("Cargando producto con ID:", itemId); // Depuración
+        console.log("Cargando producto con ID:", itemId); 
         const productData = await getProductById(itemId);
         
         if (!isMounted) return;

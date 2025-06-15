@@ -1,18 +1,19 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color: #213547;
-  background-color: #ffffff;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
+  --primary: #0071e3;
+  --primary-hover: #0062c4;
+  --text-dark: #1d1d1f;
+  --text-light: #86868b;
+  --bg-light: #fbfbfd;
+  --border-light: #f0f0f0;
 }
 
 body {
   margin: 0;
-  min-width: 1024px !important; 
-  min-height: 100vh;
-  overflow-x: auto; 
+  font-family: 'SF Pro Text', -apple-system, sans-serif;
+  background: var(--bg-light);
+  color: var(--text-dark);
+  min-width: 100vw !important;
+  overflow-x: hidden;
 }
 
 #root {
