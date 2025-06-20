@@ -3,49 +3,59 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState([]);
-
-  useEffect(() => {
+  const [cart, setCart] = useState(() => {
+    // Inicializar el estado directamente desde localStorage al montar el componente
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
       try {
         const parsedCart = JSON.parse(savedCart);
-        const validatedCart = parsedCart.map(item => ({
-          ...item,
-          quantity: Number(item.quantity) || 1,
-          price: Number(item.price) || 0,
-          stock: Number(item.stock) || 0 
-        }));
-        setCart(validatedCart);
+        if (Array.isArray(parsedCart)) {
+          return parsedCart
+            .filter(item => item && typeof item === 'object' && item.id && typeof item.title === 'string' && !isNaN(item.price) && !isNaN(item.quantity) && !isNaN(item.stock))
+            .map(item => ({
+              id: String(item.id),
+              title: String(item.title),
+              price: Number(item.price) || 0,
+              quantity: Math.max(1, Number(item.quantity) || 1),
+              stock: Number(item.stock) || 0,
+              imageUrl: String(item.imageUrl || '/images/placeholder.jpg')
+            }));
+        }
       } catch (error) {
-        console.error('Error al parsear carrito:', error);
+        console.error('Error al parsear carrito inicial:', error.message);
         localStorage.removeItem('cart');
       }
     }
-  }, []);
+    return [];
+  });
 
   useEffect(() => {
+    // Sincronizar localStorage solo cuando el carrito cambie
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
-  
   const getAvailableStock = (productId, productStock) => {
     const cartItem = cart.find(item => item.id === productId);
     return productStock - (cartItem?.quantity || 0);
   };
 
   const addToCart = (product, quantity = 1) => {
+    if (!product || !product.id || !product.title || isNaN(product.price) || isNaN(product.stock)) {
+      console.error('Producto inválido:', product);
+      return;
+    }
     setCart(prevCart => {
       const existingItem = prevCart.find(item => item.id === product.id);
+      const validatedQuantity = Math.max(1, Number(quantity));
       
       if (existingItem) {
         return prevCart.map(item =>
           item.id === product.id
             ? { 
                 ...item, 
-                quantity: item.quantity + Number(quantity),
+                quantity: Math.min(item.quantity + validatedQuantity, item.stock),
                 price: Number(item.price),
-                stock: Number(item.stock) 
+                stock: Number(item.stock)
               }
             : item
         );
@@ -54,10 +64,12 @@ export const CartProvider = ({ children }) => {
       return [
         ...prevCart, 
         { 
-          ...product, 
-          quantity: Number(quantity),
+          id: String(product.id),
+          title: String(product.title),
           price: Number(product.price),
-          stock: Number(product.stock) 
+          quantity: Math.min(validatedQuantity, Number(product.stock)),
+          stock: Number(product.stock),
+          imageUrl: String(product.imageUrl || '/images/placeholder.jpg')
         }
       ];
     });
@@ -71,13 +83,9 @@ export const CartProvider = ({ children }) => {
     setCart(prevCart => 
       prevCart.map(item => {
         if (item.id === productId) {
-          const maxAllowed = item.stock; 
-          const finalQuantity = Math.min(newQuantity, maxAllowed);
-          
-          return { 
-            ...item, 
-            quantity: finalQuantity
-          };
+          const maxAllowed = item.stock;
+          const finalQuantity = Math.min(Math.max(0, Number(newQuantity)), maxAllowed);
+          return { ...item, quantity: finalQuantity };
         }
         return item;
       })
@@ -86,6 +94,7 @@ export const CartProvider = ({ children }) => {
 
   const clearCart = () => {
     setCart([]);
+    localStorage.removeItem('cart');
   };
 
   const totalItems = cart.reduce(

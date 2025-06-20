@@ -1,18 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
+import { createOrder } from '../services/orders';
 import Swal from 'sweetalert2';
 import './CheckoutPage.css';
 
 const CheckoutPage = () => {
   const { cart, totalPrice, clearCart } = useCart();
   const navigate = useNavigate();
-  
-  
+
+  useEffect(() => {
+    if (cart.length === 0) {
+      Swal.fire({
+        title: 'Carrito vacío',
+        text: 'Por favor, selecciona productos antes de continuar.',
+        icon: 'warning',
+        confirmButtonText: 'Volver a la tienda',
+        willClose: () => navigate('/')
+      });
+    }
+  }, [cart, navigate]);
+
   const today = new Date();
   const maxDate = new Date();
   maxDate.setDate(today.getDate() + 4);
-  
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -22,10 +34,9 @@ const CheckoutPage = () => {
     deliveryDate: today.toISOString().split('T')[0]
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    
+
     const errors = {};
     if (!formData.name.trim()) errors.name = 'Nombre requerido';
     if (!/^\S+@\S+\.\S+$/.test(formData.email)) errors.email = 'Email inválido';
@@ -38,45 +49,53 @@ const CheckoutPage = () => {
       return;
     }
 
-    
-    Swal.fire({
-      title: '¿Confirmar compra?',
-      html: `
-        <div style="text-align:left;">
-          <p><strong>Total:</strong> $${totalPrice.toFixed(2)}</p>
-          <p><strong>Enviar a:</strong> ${formData.address}, CP: ${formData.postalCode}</p>
-          <p><strong>Fecha estimada:</strong> ${new Date(formData.deliveryDate).toLocaleDateString()}</p>
-        </div>
-      `,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Confirmar',
-      cancelButtonText: 'Revisar datos'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        clearCart();
-        Swal.fire({
-          title: '¡Compra exitosa!',
-          html: `
-            <div style="text-align:center;">
-              <p>Gracias por tu compra, ${formData.name}.</p>
-              <p>Recibirás un correo en ${formData.email}</p>
-            </div>
-          `,
-          icon: 'success',
-          confirmButtonText: 'Volver al inicio',
-          willClose: () => navigate('/')
-        });
-      }
-    });
+    try {
+      const order = {
+        buyer: {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address,
+          postalCode: formData.postalCode
+        },
+        items: cart.map(item => ({
+          id: item.id,
+          title: item.title,
+          price: Number(item.price),
+          quantity: Number(item.quantity),
+          imageUrl: item.imageUrl
+        })),
+        total: Number(totalPrice)
+      };
+
+      const createdOrder = await createOrder(order);
+
+      clearCart();
+
+      Swal.fire({
+        title: '¡Compra exitosa!',
+        html: `
+          <div style="text-align:center;">
+            <p>Gracias por tu compra, ${formData.name}.</p>
+            <p>Orden ID: ${createdOrder.id}</p>
+            <p>Recibirás un correo en ${formData.email}</p>
+          </div>
+        `,
+        icon: 'success',
+        confirmButtonText: 'Volver al inicio',
+        willClose: () => navigate('/')
+      });
+    } catch (error) {
+      Swal.fire('Error', error.message || 'No se pudo procesar la compra. Intenta de nuevo.', 'error');
+    }
   };
+
+  if (cart.length === 0) return null;
 
   return (
     <div className="checkout-page">
       <h1>Finalizar compra</h1>
-      
       <div className="checkout-container">
-        
         <div className="order-summary">
           <h3>Tu pedido</h3>
           <ul>
@@ -92,11 +111,8 @@ const CheckoutPage = () => {
             <span>${totalPrice.toFixed(2)}</span>
           </div>
         </div>
-
-        
         <form onSubmit={handleSubmit} className="checkout-form">
           <h3>Datos de envío</h3>
-          
           <div className="form-group">
             <input
               type="text"
@@ -105,7 +121,6 @@ const CheckoutPage = () => {
               onChange={(e) => setFormData({...formData, name: e.target.value})}
             />
           </div>
-          
           <div className="form-group">
             <input
               type="email"
@@ -114,7 +129,6 @@ const CheckoutPage = () => {
               onChange={(e) => setFormData({...formData, email: e.target.value})}
             />
           </div>
-          
           <div className="form-group">
             <input
               type="tel"
@@ -123,7 +137,6 @@ const CheckoutPage = () => {
               onChange={(e) => setFormData({...formData, phone: e.target.value})}
             />
           </div>
-          
           <div className="form-group">
             <input
               type="text"
@@ -132,7 +145,6 @@ const CheckoutPage = () => {
               onChange={(e) => setFormData({...formData, address: e.target.value})}
             />
           </div>
-          
           <div className="form-group">
             <input
               type="text"
@@ -141,7 +153,6 @@ const CheckoutPage = () => {
               onChange={(e) => setFormData({...formData, postalCode: e.target.value})}
             />
           </div>
-          
           <div className="form-group">
             <label>Fecha de entrega *</label>
             <input
@@ -151,9 +162,8 @@ const CheckoutPage = () => {
               value={formData.deliveryDate}
               onChange={(e) => setFormData({...formData, deliveryDate: e.target.value})}
             />
-            <small>Llegara al domicilio el dia: {maxDate.toLocaleDateString()}</small>
+            <small>Llegará al domicilio el día: {maxDate.toLocaleDateString()}</small>
           </div>
-          
           <button type="submit" className="btn-checkout">
             Confirmar compra
           </button>
