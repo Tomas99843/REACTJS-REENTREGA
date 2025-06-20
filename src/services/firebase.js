@@ -16,8 +16,8 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 
-enableIndexedDbPersistence(db).catch((err) => {
-  console.log("Error de persistencia: ", err.code);
-});
+// enableIndexedDbPersistence(db).catch((err) => {
+//   console.log("Error de persistencia: ", err.code);
+// });
 
 export { db };
