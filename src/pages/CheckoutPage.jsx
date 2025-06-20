@@ -70,9 +70,7 @@ const CheckoutPage = () => {
 
       const createdOrder = await createOrder(order);
 
-      clearCart();
-
-      Swal.fire({
+      await Swal.fire({
         title: '¡Compra exitosa!',
         html: `
           <div style="text-align:center;">
@@ -82,9 +80,12 @@ const CheckoutPage = () => {
           </div>
         `,
         icon: 'success',
-        confirmButtonText: 'Volver al inicio',
-        willClose: () => navigate('/')
+        confirmButtonText: 'Volver al inicio'
       });
+
+      clearCart();
+      navigate('/');
+
     } catch (error) {
       Swal.fire('Error', error.message || 'No se pudo procesar la compra. Intenta de nuevo.', 'error');
     }
