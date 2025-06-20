@@ -3,6 +3,8 @@
     font-size: 15px;
     color: #ffffff;
     text-decoration: none;
+    padding-right:100px;
+    
   }
   .cart-badge {
     position: absolute;
@@ -17,4 +19,5 @@
     align-items: center;
     justify-content: center;
     font-size: 12px;
+    
   }

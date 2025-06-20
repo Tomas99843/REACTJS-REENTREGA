@@ -7,7 +7,7 @@ const ItemList = ({ products }) => {
     <div className="item-list-grid">
       {products.map((product) => (
         <Item 
-          key={product.firestoreId}  
+          key={product.id}  
           product={product}
           className="item-card"
         />

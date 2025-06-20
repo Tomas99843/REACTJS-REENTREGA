@@ -75,12 +75,12 @@
 }
 .cart-link {
   position: relative;
-  margin-left: 1rem;
+  margin-left: 3rem;
 }
 .cart-badge {
   position: absolute;
   top: -5px;
-  right: -8px;
+  right: 80px;
   background: #d82c2c;
   color: white;
   border-radius: 50%;

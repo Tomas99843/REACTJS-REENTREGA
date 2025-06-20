@@ -18,9 +18,11 @@ const Item = ({ product }) => {
         <p className="item-price">${product.price}</p>
       </div>
       
-      <button className="detail-button">
-        Ver detalles
-      </button>
+      <Link to={`/item/${product.id}`}>  {/* Usamos product.id */}
+        <button className="detail-button">
+          Ver detalles
+        </button>
+      </Link>
     </div>
   );
 };

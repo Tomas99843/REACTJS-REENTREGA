@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { getProductsByCategory, getProducts, getCategoryName } from '@services/products';
 import ItemList from '@components/Item/ItemList';
 import './ItemListContainer.css';
@@ -8,23 +8,24 @@ const ItemListContainer = ({ categoryId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const data = categoryId 
-          ? await getProductsByCategory(categoryId)
-          : await getProducts();
-        setProducts(data);
-      } catch (err) {
-        setError("Error al cargar productos");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
+  const fetchProducts = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = categoryId 
+        ? await getProductsByCategory(categoryId)
+        : await getProducts();
+      setProducts(data);
+    } catch (err) {
+      setError("Error al cargar productos");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   }, [categoryId]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   if (loading) return <div className="loading">Cargando...</div>;
   if (error) return <div className="error">{error}</div>;
